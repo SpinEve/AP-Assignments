@@ -18,7 +18,8 @@ class DelayLine {
   void setdelaySize(int _delaySize) {
     delaySize = _delaySize;
     samples = new float[delaySize];
-    memset(samples, 0, 4 * delaySize);  // Cleaning arrays for reading at start
+    // Cleaning arrays for reading at start
+    std::fill(samples, samples + delaySize, 0.0f);
   }
 
  public:
