@@ -12,7 +12,7 @@
 #include <cstring>
 class DelayLine {
  private:
-  float* samples;  // Store delayed samples
+  float* samples = nullptr;  // Store delayed samples
   int delaySize, readHead, writeHead, delayTime;
   float feedback;  // Feedback in "read and write", see loop()
   void setdelaySize(int _delaySize) {
@@ -61,5 +61,9 @@ class DelayLine {
     samples[writeHead++] = newSample;
     if (writeHead >= delaySize) writeHead -= delaySize;
   }
-  ~DelayLine() { delete samples; }
+  ~DelayLine() {
+    if(samples){
+      delete[] samples;
+    } 
+  }
 };
