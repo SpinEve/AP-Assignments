@@ -2493,6 +2493,9 @@
     <ClInclude Include="..\..\Source\PluginProcessor.h">
       <Filter>Assignment3\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Synth.h">
+      <Filter>Assignment3\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\PluginEditor.h">
       <Filter>Assignment3\Source</Filter>
     </ClInclude>

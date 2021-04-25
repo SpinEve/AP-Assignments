@@ -11,6 +11,7 @@
             file="Source/PluginProcessor.h"/>
       <FILE id="kFElyU" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
+      <FILE id="oYg1ae" name="Synth.h" compile="0" resource="0" file="Source/Synth.h"/>
       <FILE id="kPrup2" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
   </MAINGROUP>
