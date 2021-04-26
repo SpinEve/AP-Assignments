@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="YmXq9F" name="Assignment3" projectType="audioplug" addUsingNamespaceToJuceHeader="0"
               displaySplashScreen="1" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              useAppConfig="0">
+              useAppConfig="0" cppLanguageStandard="17">
   <MAINGROUP id="q5F0q5" name="Assignment3">
     <GROUP id="{CCF10AAC-256A-54C5-C579-5A7443E07250}" name="Source">
       <FILE id="zLR4YY" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -77,5 +77,6 @@
   </MODULES>
   <LIVE_SETTINGS>
     <WINDOWS buildEnabled="1"/>
+    <LINUX/>
   </LIVE_SETTINGS>
 </JUCERPROJECT>

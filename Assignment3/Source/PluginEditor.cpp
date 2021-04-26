@@ -16,7 +16,7 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
     : AudioProcessorEditor(&p), audioProcessor(p) {
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
-  setSize(400, 300);
+  setSize(800, 600);
 }
 
 Assignment3AudioProcessorEditor::~Assignment3AudioProcessorEditor() {}
@@ -33,13 +33,15 @@ void Assignment3AudioProcessorEditor::paint(juce::Graphics& g) {
   g.drawFittedText("Hello World!", getLocalBounds(),
                    juce::Justification::centred, 1);
   midiVolume.setRange(0.f, 100.f);
+  // midiVolume.setTextValueSuffix(" Volume");
+  addAndMakeVisible(midiVolume);
   // midiVolume.addListener(this);
 }
 
 void Assignment3AudioProcessorEditor::resized() {
   // This is generally where you'll want to lay out the positions of any
   // subcomponents in your editor..
-  auto sliderLeft = 120;
+  auto sliderLeft = 20;
   midiVolume.setBounds(sliderLeft, 20, getWidth() - sliderLeft - 10, 20);
 }
 

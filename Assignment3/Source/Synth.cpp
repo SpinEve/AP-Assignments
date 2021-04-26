@@ -1,4 +1,3 @@
-#pragma once
 #include "Synth.h"
 
 #include <JuceHeader.h>
@@ -15,7 +14,7 @@ void SynthVoice::stopNote(float velocity, bool allowTailOff) {
   clearCurrentNote();
   playing = false;
 }
-void SynthVoice::renderNextBlock(juce::AudioBuffer<double>& outputBuffer,
+void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
                                  int startSample, int numSamples) {
   if (playing) {
     for (int sampleIndex = startSample;

@@ -16,10 +16,10 @@ class SynthVoice : public juce::SynthesiserVoice {
                  juce::SynthesiserSound* sound,
                  int currentPitchWheelPosition) override;
   void stopNote(float velocity, bool allowTailOff) override;
-  void renderNextBlock(juce::AudioBuffer<double>& outputBuffer, int startSample,
+  void renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample,
                        int numSamples) override;
-  void pitchWheelMoved(int) override;
-  void controllerMoved(int, int) override;
+  void pitchWheelMoved(int) override {}
+  void controllerMoved(int, int) override {}
   bool canPlaySound(juce::SynthesiserSound* sound) override;
   void setVolume(float _volume);
 
