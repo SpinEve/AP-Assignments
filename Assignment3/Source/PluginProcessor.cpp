@@ -120,6 +120,15 @@ bool Assignment3AudioProcessor::isBusesLayoutSupported(
 
 void Assignment3AudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                              juce::MidiBuffer& midiMessages) {
+  ape = dynamic_cast<Assignment3AudioProcessorEditor*>(getActiveEditor());
+  if (ape != nullptr) {
+    volume = ape->getVolume();
+    for (int i = 0; i < countVoice; i++) {
+      SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+      sv->setVolume(volume);
+    }
+  }
+
   synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 

@@ -13,6 +13,7 @@ class SynthVoice : public juce::SynthesiserVoice {
   void startNote(int midiNoteNumber, float velocity,
                  juce::SynthesiserSound* sound,
                  int currentPitchWheelPosition) override {
+    float freq = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
     playing = true;
   }
   void stopNote(float velocity, bool allowTailOff) override {
@@ -24,10 +25,12 @@ class SynthVoice : public juce::SynthesiserVoice {
     if (playing) {
       for (int sampleIndex = startSample;
            sampleIndex < (startSample + numSamples); sampleIndex++) {
+        // TODO: Oscillator
         // Noise Generator
         float currentSample = random.nextFloat() * 2 - 1.0;
         for (int chan = 0; chan < outputBuffer.getNumChannels(); chan++) {
-          outputBuffer.addSample(chan, sampleIndex, currentSample * 0.2);
+          outputBuffer.addSample(chan, sampleIndex,
+                                 currentSample * 0.2 * (volume / 100.f));
         }
       }
     }
@@ -37,8 +40,10 @@ class SynthVoice : public juce::SynthesiserVoice {
   bool canPlaySound(juce::SynthesiserSound* sound) override {
     return dynamic_cast<SynthSound*>(sound) != nullptr;
   }
+  void setVolume(float _volume) { volume = _volume; }
 
  private:
   bool playing = false;
+  float volume = 50.f, freq = 440.f;
   juce::Random random;
 };
