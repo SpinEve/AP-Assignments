@@ -12,7 +12,9 @@
       <FILE id="kFElyU" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="oYg1ae" name="Synth.h" compile="0" resource="0" file="Source/Synth.h"/>
+      <FILE id="UZWz6L" name="Synth.cpp" compile="1" resource="0" file="Source/Synth.cpp"/>
       <FILE id="kPrup2" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="ZTIgAz" name="Oscillator.h" compile="0" resource="0" file="Source/Oscillator.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>

@@ -436,6 +436,9 @@
     <ClCompile Include="..\..\Source\PluginEditor.cpp">
       <Filter>Assignment3\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Synth.cpp">
+      <Filter>Assignment3\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Library\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <Filter>JUCE Modules\juce_audio_basics\buffers</Filter>
     </ClCompile>
@@ -2497,6 +2500,9 @@
       <Filter>Assignment3\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\PluginEditor.h">
+      <Filter>Assignment3\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Oscillator.h">
       <Filter>Assignment3\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\..\Library\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">
