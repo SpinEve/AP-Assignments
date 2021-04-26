@@ -81,6 +81,8 @@ void Assignment3AudioProcessor::changeProgramName(int index,
 //==============================================================================
 void Assignment3AudioProcessor::prepareToPlay(double sampleRate,
                                               int samplesPerBlock) {
+  sr = sampleRate;
+  synth.setCurrentPlaybackSampleRate(sr);
   for (int i = 0; i < countVoice; i++) {
     synth.addSound(new SynthSound());
     synth.addVoice(new SynthVoice());
@@ -120,7 +122,8 @@ bool Assignment3AudioProcessor::isBusesLayoutSupported(
 
 void Assignment3AudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                              juce::MidiBuffer& midiMessages) {
-  Assignment3AudioProcessorEditor* ape = dynamic_cast<Assignment3AudioProcessorEditor*>(getActiveEditor());
+  Assignment3AudioProcessorEditor* ape =
+      dynamic_cast<Assignment3AudioProcessorEditor*>(getActiveEditor());
   if (ape != nullptr) {
     volume = ape->getVolume();
     for (int i = 0; i < countVoice; i++) {
