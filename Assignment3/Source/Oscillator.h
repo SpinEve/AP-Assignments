@@ -19,14 +19,14 @@ class Oscillator {
     setFreq(_freq);
   }
 
-  float loop() {
+  float getNextSample() {
     phase += phaseDelta;
     if (phase > 1.0f) phase -= 1.0f;
     return output(phase);
   }
 
   // In case that skip certain numbers of loops
-  float loop(int num) {
+  float getNextSample(int num) {
     phase += phaseDelta * num;
     phase -= (int)phase;
     return output(phase);
