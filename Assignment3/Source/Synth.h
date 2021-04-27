@@ -22,6 +22,7 @@ class SynthVoice : public juce::SynthesiserVoice {
   void controllerMoved(int, int) override {}
   bool canPlaySound(juce::SynthesiserSound* sound) override;
   void setVolume(float _volume);
+  ~SynthVoice();
 
  private:
   bool playing = false;

@@ -9,6 +9,7 @@
 #include "PluginEditor.h"
 
 #include "PluginProcessor.h"
+#include "Listener.h"
 
 //==============================================================================
 Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
@@ -17,6 +18,7 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
   setSize(800, 600);
+  volumeListener = new SliderListener(&volume);
 }
 
 Assignment3AudioProcessorEditor::~Assignment3AudioProcessorEditor() {}
@@ -32,10 +34,10 @@ void Assignment3AudioProcessorEditor::paint(juce::Graphics& g) {
   g.setFont(15.0f);
   g.drawFittedText("Hello World!", getLocalBounds(),
                    juce::Justification::centred, 1);
+  
   midiVolume.setRange(0.f, 100.f);
-  // midiVolume.setTextValueSuffix(" Volume");
+  midiVolume.addListener(volumeListener);
   addAndMakeVisible(midiVolume);
-  // midiVolume.addListener(this);
 }
 
 void Assignment3AudioProcessorEditor::resized() {
@@ -46,5 +48,5 @@ void Assignment3AudioProcessorEditor::resized() {
 }
 
 float Assignment3AudioProcessorEditor::getVolume() {
-  return midiVolume.getValue();
+  return volume;
 }

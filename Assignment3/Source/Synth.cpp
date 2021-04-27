@@ -2,7 +2,14 @@
 
 #include <JuceHeader.h>
 
-SynthVoice::SynthVoice() { sampleOsc = new SinOsc(); }
+SynthVoice::SynthVoice() {
+  sampleOsc = new SinOsc();
+  sampleOsc->setSampleRate(getSampleRate());
+  // DBG(getSampleRate());
+}
+SynthVoice::~SynthVoice(){
+  delete sampleOsc;
+}
 void SynthVoice::startNote(int midiNoteNumber, float velocity,
                            juce::SynthesiserSound* sound,
                            int currentPitchWheelPosition) {
@@ -25,7 +32,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
       // float currentSample = random.nextFloat() * 2 - 1.0;
       for (int chan = 0; chan < outputBuffer.getNumChannels(); chan++) {
         outputBuffer.addSample(chan, sampleIndex,
-                               currentSample * 0.2 * (volume / 100.f));
+                               currentSample * 0.5 * (volume / 100.f));
       }
     }
   }

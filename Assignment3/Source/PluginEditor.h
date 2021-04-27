@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 
 #include "PluginProcessor.h"
+#include "Listener.h"
 
 //==============================================================================
 /**
@@ -29,5 +30,7 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   // access the processor object that created it.
   Assignment3AudioProcessor& audioProcessor;
   juce::Slider midiVolume;
+  SliderListener* volumeListener;
+  float volume;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)
 };

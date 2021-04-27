@@ -25,6 +25,10 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
       )
 #endif
 {
+  for (int i = 0; i < countVoice; i++) {
+    synth.addVoice(new SynthVoice());
+  }
+  synth.addSound(new SynthSound());
 }
 
 Assignment3AudioProcessor::~Assignment3AudioProcessor() {}
@@ -83,10 +87,6 @@ void Assignment3AudioProcessor::prepareToPlay(double sampleRate,
                                               int samplesPerBlock) {
   sr = sampleRate;
   synth.setCurrentPlaybackSampleRate(sr);
-  for (int i = 0; i < countVoice; i++) {
-    synth.addSound(new SynthSound());
-    synth.addVoice(new SynthVoice());
-  }
 }
 
 void Assignment3AudioProcessor::releaseResources() {
