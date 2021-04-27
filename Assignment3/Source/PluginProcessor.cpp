@@ -25,7 +25,7 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
       )
 #endif
 {
-  for (int i = 0; i < countVoice; i++) {
+  for (auto i = 0; i < countVoice; i++) {
     synth.addVoice(new SynthVoice());
   }
   synth.addSound(new SynthSound());
@@ -131,7 +131,7 @@ void Assignment3AudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
       sv->setVolume(volume);
     }
   }
-
+  // synth.noteOn(0, 57, 10.f);
   synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 

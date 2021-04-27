@@ -10,8 +10,8 @@
 
 #include <JuceHeader.h>
 
-#include "PluginProcessor.h"
 #include "Listener.h"
+#include "PluginProcessor.h"
 
 //==============================================================================
 /**
@@ -25,6 +25,7 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   void paint(juce::Graphics&) override;
   void resized() override;
   float getVolume();
+
  private:
   // This reference is provided as a quick way for your editor to
   // access the processor object that created it.

@@ -55,7 +55,7 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
  private:
   //==============================================================================
   juce::Synthesiser synth;
-  int countVoice;
+  int countVoice = 4;
   float volume = 50.f;
   double sr;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessor)

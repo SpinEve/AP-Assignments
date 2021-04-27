@@ -8,8 +8,8 @@
 
 #include "PluginEditor.h"
 
-#include "PluginProcessor.h"
 #include "Listener.h"
+#include "PluginProcessor.h"
 
 //==============================================================================
 Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
@@ -34,7 +34,7 @@ void Assignment3AudioProcessorEditor::paint(juce::Graphics& g) {
   g.setFont(15.0f);
   g.drawFittedText("Hello World!", getLocalBounds(),
                    juce::Justification::centred, 1);
-  
+
   midiVolume.setRange(0.f, 100.f);
   midiVolume.addListener(volumeListener);
   addAndMakeVisible(midiVolume);
@@ -43,10 +43,8 @@ void Assignment3AudioProcessorEditor::paint(juce::Graphics& g) {
 void Assignment3AudioProcessorEditor::resized() {
   // This is generally where you'll want to lay out the positions of any
   // subcomponents in your editor..
-  auto sliderLeft = 20;
-  midiVolume.setBounds(sliderLeft, 20, getWidth() - sliderLeft - 10, 20);
+  auto Left = 20;
+  midiVolume.setBounds(Left, 20, getWidth() - Left - 10, 20);
 }
 
-float Assignment3AudioProcessorEditor::getVolume() {
-  return volume;
-}
+float Assignment3AudioProcessorEditor::getVolume() { return volume; }

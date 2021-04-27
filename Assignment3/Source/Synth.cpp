@@ -7,13 +7,12 @@ SynthVoice::SynthVoice() {
   sampleOsc->setSampleRate(getSampleRate());
   // DBG(getSampleRate());
 }
-SynthVoice::~SynthVoice(){
-  delete sampleOsc;
-}
+SynthVoice::~SynthVoice() { delete sampleOsc; }
 void SynthVoice::startNote(int midiNoteNumber, float velocity,
                            juce::SynthesiserSound* sound,
                            int currentPitchWheelPosition) {
   float freq = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
+  DBG(midiNoteNumber);
   sampleOsc->setFreq(freq);
   playing = true;
 }
@@ -30,8 +29,8 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
       float currentSample = sampleOsc->loop();
       // Noise Generator
       // float currentSample = random.nextFloat() * 2 - 1.0;
-      for (int chan = 0; chan < outputBuffer.getNumChannels(); chan++) {
-        outputBuffer.addSample(chan, sampleIndex,
+      for (auto i = 0; i < outputBuffer.getNumChannels(); i++) {
+        outputBuffer.addSample(i, sampleIndex,
                                currentSample * 0.5 * (volume / 100.f));
       }
     }
