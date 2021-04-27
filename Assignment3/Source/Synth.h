@@ -26,7 +26,10 @@ class SynthVoice : public juce::SynthesiserVoice {
 
  private:
   bool playing = false;
+  bool isOff = false;
   float volume = 50.f, freq = 440.f;
   juce::Random random;
+  juce::ADSR env;
+  juce::ADSR::Parameters envPara;
   SinOsc* sampleOsc;
 };
