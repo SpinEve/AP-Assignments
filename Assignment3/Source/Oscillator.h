@@ -48,7 +48,10 @@ class Oscillator {
     freq = f;
     phaseDelta = freq / sampleRate;
   }
-  void setDefFreq(float f) { defFreq = f; }
+  void setDefFreq(float f) {
+    defFreq = f;
+    setFreq(defFreq);
+  }
   float getDefFreq() { return defFreq; }
   void clear() {
     setFreq(defFreq);

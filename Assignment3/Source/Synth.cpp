@@ -37,7 +37,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
     for (auto i = startSample; i < (startSample + numSamples); i++) {
       float currentSample;
       // Modulation Part
-      if (moduType == 1) {  // FM
+      if (moduType == 1) {  // FM Modulation
         carrOsc->setFreq(carrOsc->getDefFreq() *
                          (1 + midiOsc->getNextSample()));
         currentSample = carrOsc->getNextSample();
@@ -51,6 +51,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
       currentSample *= env.getNextSample();
       // Gain
       currentSample = currentSample * 0.2;
+      // Render
       for (auto ch = 0; ch < outputBuffer.getNumChannels(); ch++) {
         outputBuffer.addSample(ch, i, currentSample);
       }
@@ -65,8 +66,8 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
 bool SynthVoice::canPlaySound(juce::SynthesiserSound* sound) {
   return dynamic_cast<SynthSound*>(sound) != nullptr;
 }
-void SynthVoice::setCarrFreq(float _carrFreq) {
-  carrFreq = _carrFreq;
+void SynthVoice::setCarrFreq(float cf) {
+  carrFreq = cf;
   carrOsc->setDefFreq(carrFreq);
 }
 void SynthVoice::setADSR(float a, float d, float s, float r) {
