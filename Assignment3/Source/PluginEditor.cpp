@@ -31,10 +31,10 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   carrFreqSlider.onValueChange = [this] { freqSliderChanged(); };
 
   addAndMakeVisible(moduTypeBox);
-  moduTypeBox.addItem("None", 0);
-  moduTypeBox.addItem("FM", 1);
-  moduTypeBox.addItem("PM", 2);
-  moduTypeBox.addItem("AM", 3);
+  moduTypeBox.addItem("None", 1);
+  moduTypeBox.addItem("FM", 2);
+  moduTypeBox.addItem("PM", 3);
+  moduTypeBox.addItem("AM", 4);
   moduTypeBox.onChange = [this] { moduTypeBoxChanged(); };
 }
 

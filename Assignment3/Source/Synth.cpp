@@ -37,15 +37,15 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
     for (auto i = startSample; i < (startSample + numSamples); i++) {
       float currentSample;
       // Modulation Part
-      if (moduType == 0) {  // No Modulation
+      if (moduType == 1) {  // No Modulation
         currentSample = midiOsc->getNextSample();
-      } else if (moduType == 1) {  // FM
+      } else if (moduType == 2) {  // FM
         carrOsc->setFreq(carrOsc->getDefFreq() *
                          (1 + midiOsc->getNextSample()));
         currentSample = carrOsc->getNextSample();
-      } else if (moduType == 2) {  // PM
+      } else if (moduType == 3) {  // PM
         currentSample = carrOsc->getShiftedSample(midiOsc->getNextSample());
-      } else if (moduType == 3) {  // AM
+      } else if (moduType == 4) {  // AM
         currentSample =
             carrOsc->getNextSample() * (1 + midiOsc->getNextSample());
       }
