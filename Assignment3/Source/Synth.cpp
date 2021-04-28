@@ -37,24 +37,27 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
     for (auto i = startSample; i < (startSample + numSamples); i++) {
       float currentSample;
       // Modulation Part
-      if (moduType == 1) {  // FM Modulation
+      if (moduType == 0) {  // No Modulation
+        currentSample = midiOsc->getNextSample();
+      } else if (moduType == 1) {  // FM
         carrOsc->setFreq(carrOsc->getDefFreq() *
                          (1 + midiOsc->getNextSample()));
         currentSample = carrOsc->getNextSample();
       } else if (moduType == 2) {  // PM
         currentSample = carrOsc->getShiftedSample(midiOsc->getNextSample());
-      } else {  // AM
+      } else if (moduType == 3) {  // AM
         currentSample =
             carrOsc->getNextSample() * (1 + midiOsc->getNextSample());
       }
       // Envelope
       currentSample *= env.getNextSample();
       // Gain
-      currentSample = currentSample * 0.2;
+      currentSample *= 0.2;
       // Render
       for (auto ch = 0; ch < outputBuffer.getNumChannels(); ch++) {
         outputBuffer.addSample(ch, i, currentSample);
       }
+      // Check if this note should be cleaned
       if (isOff && !env.isActive()) {
         playing = false;
         clearCurrentNote();
@@ -79,5 +82,5 @@ void SynthVoice::setADSR(float a, float d, float s, float r) {
 }
 void SynthVoice::setModuType(int mt) {
   moduType = mt;
-  carrOsc->clear();
+  carrOsc->clear();  // Reset the carrier osc
 }
