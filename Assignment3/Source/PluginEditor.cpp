@@ -19,15 +19,12 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   // editor's size to whatever you need it to be.
   setSize(800, 600);
 
-  defCarrFreq = 440.f;
-  // carrFreqListener = new SliderListener(&carrFreq);  // TODO: function
-  // pointer
+  float defCarrFreq = 440.f;
   addAndMakeVisible(carrFreqSlider);
   carrFreqSlider.setRange(defCarrFreq, defCarrFreq * 4, 1.f);
   carrFreqSlider.setValue(defCarrFreq);
   carrFreqSlider.setDoubleClickReturnValue(true, defCarrFreq);
   carrFreqSlider.onValueChange = [this] { freqSliderChanged(); };
-  // carrFreqSlider.addListener(carrFreqListener);
 
   addAndMakeVisible(moduTypeBox);
   moduTypeBox.addItem("FM", 1);
@@ -59,16 +56,12 @@ void Assignment3AudioProcessorEditor::resized() {
   carrFreqSlider.setBounds(indent, indent, getWidth() - 2 * indent, h);
   moduTypeBox.setBounds(indent, 2 * indent + h, getWidth() - 2 * indent, h);
 }
-
-float Assignment3AudioProcessorEditor::getCarrFreq() { return carrFreq; }
-void Assignment3AudioProcessorEditor::setCarrFreq(float _carrFreq) {
-  carrFreq = _carrFreq;
-  carrFreqSlider.setValue(carrFreq);
+void Assignment3AudioProcessorEditor::setCarrFreq(float cf) {
+  carrFreqSlider.setValue(cf);
 }
 void Assignment3AudioProcessorEditor::moduTypeBoxChanged() {
-  moduType = moduTypeBox.getSelectedId();
+  audioProcessor.setModuType(moduTypeBox.getSelectedId());
 }
 void Assignment3AudioProcessorEditor::freqSliderChanged() {
-  carrFreq = carrFreqSlider.getValue();
+  audioProcessor.setCarrFreq(carrFreqSlider.getValue());
 }
-int Assignment3AudioProcessorEditor::getModuType() { return moduType; }

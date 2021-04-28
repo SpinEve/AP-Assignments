@@ -24,11 +24,9 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   //==============================================================================
   void paint(juce::Graphics&) override;
   void resized() override;
-  float getCarrFreq();
   void setCarrFreq(float _carrFreq);
   void freqSliderChanged();
   void moduTypeBoxChanged();
-  int getModuType();
 
  private:
   // This reference is provided as a quick way for your editor to
@@ -36,7 +34,5 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   Assignment3AudioProcessor& audioProcessor;
   juce::Slider carrFreqSlider;
   juce::ComboBox moduTypeBox;
-  int moduType = 1;
-  float carrFreq, defCarrFreq;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)
 };

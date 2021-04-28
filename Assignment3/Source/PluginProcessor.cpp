@@ -124,24 +124,6 @@ bool Assignment3AudioProcessor::isBusesLayoutSupported(
 
 void Assignment3AudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                              juce::MidiBuffer& midiMessages) {
-  Assignment3AudioProcessorEditor* ape =
-      dynamic_cast<Assignment3AudioProcessorEditor*>(getActiveEditor());
-  if (ape != nullptr) {
-    if (*carrFreq != ape->getCarrFreq()) {
-      *carrFreq = ape->getCarrFreq();
-      for (int i = 0; i < countVoice; i++) {
-        SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-        sv->setCarrFreq(*carrFreq);
-      }
-    }
-    if (moduType != ape->getModuType()) {
-      moduType = ape->getModuType();
-      for (int i = 0; i < countVoice; i++) {
-        SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-        sv->setModuType(moduType);
-      }
-    }
-  }
   synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
@@ -176,6 +158,21 @@ void Assignment3AudioProcessor::setStateInformation(const void* data,
   // You should use this method to restore your parameters from this memory
   // block, whose contents will have been created by the getStateInformation()
   // call.
+}
+
+void Assignment3AudioProcessor::setModuType(int mt) {
+  moduType = mt;
+  for (int i = 0; i < countVoice; i++) {
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->setModuType(moduType);
+  }
+}
+void Assignment3AudioProcessor::setCarrFreq(float cf) {
+  (*carrFreq) = cf;
+  for (int i = 0; i < countVoice; i++) {
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->setCarrFreq(cf);
+  }
 }
 
 //==============================================================================

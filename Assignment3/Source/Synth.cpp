@@ -66,7 +66,6 @@ bool SynthVoice::canPlaySound(juce::SynthesiserSound* sound) {
   return dynamic_cast<SynthSound*>(sound) != nullptr;
 }
 void SynthVoice::setCarrFreq(float _carrFreq) {
-  DBG(_carrFreq);
   carrFreq = _carrFreq;
   carrOsc->setDefFreq(carrFreq);
 }
