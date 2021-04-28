@@ -92,3 +92,10 @@ class SqrOsc : public Oscillator {
     return -1.f;
   }
 };
+
+// Sawtooth Oscillator
+class SawOsc : public Oscillator {
+ public:
+  SawOsc(float sr = 48000.f, float f = 440.f) : Oscillator(sr, f) {}
+  float output(float p) override { return 2 * p - 1; }
+};

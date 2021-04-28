@@ -34,6 +34,6 @@ class SynthVoice : public juce::SynthesiserVoice {
   juce::ADSR::Parameters envPara;
 
   float carrFreq = 440.f;
-  SinOsc *carrOsc, *midiOsc;
-  int moduType;
+  Oscillator *carrOsc, *midiOsc;
+  int moduType, carrOscType, midiOscType;
 };
