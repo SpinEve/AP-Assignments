@@ -21,7 +21,7 @@ class SynthVoice : public juce::SynthesiserVoice {
   void pitchWheelMoved(int) override {}
   void controllerMoved(int, int) override {}
   bool canPlaySound(juce::SynthesiserSound* sound) override;
-  void setCarrFreq(float _carrFreq);
+  void setCarrFreq(float cf);
   void setADSR(float a, float d, float s, float r);
   void setModuType(int mt);
   ~SynthVoice();

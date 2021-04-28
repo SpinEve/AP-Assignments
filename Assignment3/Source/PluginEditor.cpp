@@ -19,6 +19,11 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   // editor's size to whatever you need it to be.
   setSize(800, 600);
 
+  addAndMakeVisible(freqLabel);
+  freqLabel.setText("Carrier Frequency", juce::dontSendNotification);
+  addAndMakeVisible(moduLabel);
+  moduLabel.setText("Modulation Method", juce::dontSendNotification);
+
   float defCarrFreq = 440.f;
   addAndMakeVisible(carrFreqSlider);
   carrFreqSlider.setRange(defCarrFreq, defCarrFreq * 4, 1.f);
@@ -53,8 +58,10 @@ void Assignment3AudioProcessorEditor::resized() {
   // subcomponents in your editor..
   auto indent = 10;
   auto h = 20;
-  carrFreqSlider.setBounds(indent, indent, getWidth() - 2 * indent, h);
-  moduTypeBox.setBounds(indent, 2 * indent + h, getWidth() - 2 * indent, h);
+  freqLabel.setBounds(indent, indent, getWidth() - 2 * indent, h);
+  carrFreqSlider.setBounds(indent, 2 * indent + h, getWidth() - 2 * indent, h);
+  moduLabel.setBounds(indent, 3 * indent + 2 * h, getWidth() - 2 * indent, h);
+  moduTypeBox.setBounds(indent, 4 * indent + 3 * h, getWidth() - 2 * indent, h);
 }
 void Assignment3AudioProcessorEditor::setCarrFreq(float cf) {
   carrFreqSlider.setValue(cf);

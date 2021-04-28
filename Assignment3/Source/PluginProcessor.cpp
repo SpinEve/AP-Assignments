@@ -171,7 +171,7 @@ void Assignment3AudioProcessor::setCarrFreq(float cf) {
   (*carrFreq) = cf;
   for (int i = 0; i < countVoice; i++) {
     SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->setCarrFreq(cf);
+    sv->setCarrFreq((*carrFreq));
   }
 }
 
