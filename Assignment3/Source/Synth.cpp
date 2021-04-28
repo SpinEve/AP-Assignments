@@ -64,7 +64,7 @@ void SynthVoice::setCarrFreq(float _carrFreq) {
 void SynthVoice::setADSR(float a, float d, float s, float r) {
   envPara.attack = a;
   envPara.decay = d;
-  envPara.release = s;
+  envPara.sustain = s;
   envPara.release = r;
   env.setParameters(envPara);
 }
