@@ -13,16 +13,16 @@
 constexpr auto PI = 3.1415926f;
 class Oscillator {
  public:
-  Oscillator(float _sr, float _freq) {
-    phase = 0.0f;
-    setSampleRate(_sr);
-    setDefFreq(_freq);
-    setFreq(_freq);
+  Oscillator(float sr, float f) {
+    phase = 0.f;
+    setSampleRate(sr);
+    setDefFreq(f);
+    setFreq(f);
   }
 
   float getNextSample() {
     phase += phaseDelta;
-    if (phase > 1.0f) phase -= 1.0f;
+    if (phase > 1.0f) phase -= 1.f;
     return output(phase);
   }
 
@@ -34,9 +34,9 @@ class Oscillator {
   }
 
   // Mainly for phase modulation (PM) that extra shift is added to phase
-  float loopwithShift(float shift) {
+  float getShiftedSample(float shift) {
     phase += phaseDelta;
-    if (phase > 1.0f) phase -= 1.0f;
+    if (phase > 1.0f) phase -= 1.f;
     float tmpPhase = phase + shift;
     tmpPhase -= (int)tmpPhase;
     return output(tmpPhase);
@@ -50,6 +50,10 @@ class Oscillator {
   }
   void setDefFreq(float f) { defFreq = f; }
   float getDefFreq() { return defFreq; }
+  void clear() {
+    setFreq(defFreq);
+    phase = 0.f;
+  }
 
  private:
   float phase, phaseDelta, freq, defFreq, sampleRate;
@@ -58,30 +62,30 @@ class Oscillator {
 // Triangle Oscillator
 class TriOsc : public Oscillator {
  public:
-  TriOsc(float _sr = 48000.0f, float _freq = 440.0f) : Oscillator(_sr, _freq) {}
+  TriOsc(float sr = 48000.f, float f = 440.f) : Oscillator(sr, f) {}
   float output(float p) override { return 2 * fabsf(p - 0.5f); }
 };
 
 // Sine Oscillator
 class SinOsc : public Oscillator {
  public:
-  SinOsc(float _sr = 48000.0f, float _freq = 440.0f) : Oscillator(_sr, _freq) {}
+  SinOsc(float sr = 48000.f, float f = 440.f) : Oscillator(sr, f) {}
   float output(float p) override { return sinf(2 * p * PI); }
 };
 
 // Cosine Oscillator
 class CosOsc : public Oscillator {
  public:
-  CosOsc(float _sr = 48000.0f, float _freq = 440.0f) : Oscillator(_sr, _freq) {}
+  CosOsc(float sr = 48000.0f, float f = 440.f) : Oscillator(sr, f) {}
   float output(float p) override { return cosf(2 * p * PI); }
 };
 
 // Square Oscillator
 class SqrOsc : public Oscillator {
  public:
-  SqrOsc(float _sr = 48000.0f, float _freq = 440.0f) : Oscillator(_sr, _freq) {}
+  SqrOsc(float sr = 48000.f, float f = 440.f) : Oscillator(sr, f) {}
   float output(float p) override {
-    if (p < 0.5) return 1.0f;
-    return -1.0f;
+    if (p < 0.5) return 1.f;
+    return -1.f;
   }
 };

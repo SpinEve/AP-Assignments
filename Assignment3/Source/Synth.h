@@ -23,6 +23,7 @@ class SynthVoice : public juce::SynthesiserVoice {
   bool canPlaySound(juce::SynthesiserSound* sound) override;
   void setCarrFreq(float _carrFreq);
   void setADSR(float a, float d, float s, float r);
+  void setModuType(int mt);
   ~SynthVoice();
 
  private:
@@ -34,4 +35,5 @@ class SynthVoice : public juce::SynthesiserVoice {
 
   float carrFreq = 440.f;
   SinOsc *carrOsc, *midiOsc;
+  int moduType;
 };

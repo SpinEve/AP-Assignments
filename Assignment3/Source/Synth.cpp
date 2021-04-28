@@ -35,9 +35,18 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
                                  int startSample, int numSamples) {
   if (playing) {
     for (auto i = startSample; i < (startSample + numSamples); i++) {
-      carrOsc->setFreq(carrOsc->getDefFreq() * (1 + midiOsc->getNextSample()));
-      float currentSample = carrOsc->getNextSample();
-      // currentSample *= (1 + midiOsc->getNextSample());
+      float currentSample;
+      // Modulation Part
+      if (moduType == 1) {  // FM
+        carrOsc->setFreq(carrOsc->getDefFreq() *
+                         (1 + midiOsc->getNextSample()));
+        currentSample = carrOsc->getNextSample();
+      } else if (moduType == 2) {  // PM
+        currentSample = carrOsc->getShiftedSample(midiOsc->getNextSample());
+      } else {  // AM
+        currentSample =
+            carrOsc->getNextSample() * (1 + midiOsc->getNextSample());
+      }
       // Envelope
       currentSample *= env.getNextSample();
       // Gain
@@ -67,4 +76,8 @@ void SynthVoice::setADSR(float a, float d, float s, float r) {
   envPara.sustain = s;
   envPara.release = r;
   env.setParameters(envPara);
+}
+void SynthVoice::setModuType(int mt) {
+  moduType = mt;
+  carrOsc->clear();
 }

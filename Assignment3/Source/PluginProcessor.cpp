@@ -135,7 +135,13 @@ void Assignment3AudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
       }
     }
   }
-
+  if (moduType != ape->getModuType()) {
+    moduType = ape->getModuType();
+    for (int i = 0; i < countVoice; i++) {
+      SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+      sv->setModuType(moduType);
+    }
+  }
   synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
