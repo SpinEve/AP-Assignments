@@ -16,6 +16,7 @@ class Oscillator {
   Oscillator(float _sr, float _freq) {
     phase = 0.0f;
     setSampleRate(_sr);
+    setDefFreq(_freq);
     setFreq(_freq);
   }
 
@@ -42,14 +43,16 @@ class Oscillator {
   }
 
   virtual float output(float p) { return p; }
-  void setSampleRate(float _sr) { sampleRate = _sr; }
-  void setFreq(float _freq) {
-    freq = _freq;
+  void setSampleRate(float sr) { sampleRate = sr; }
+  void setFreq(float f) {
+    freq = f;
     phaseDelta = freq / sampleRate;
   }
+  void setDefFreq(float f) { defFreq = f; }
+  float getDefFreq() { return defFreq; }
 
  private:
-  float phase, phaseDelta, freq, sampleRate;
+  float phase, phaseDelta, freq, defFreq, sampleRate;
 };
 
 // Triangle Oscillator

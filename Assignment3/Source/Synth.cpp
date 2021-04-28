@@ -6,7 +6,7 @@ SynthVoice::SynthVoice() {
   auto sr = getSampleRate();
   carrOsc = new SinOsc();
   carrOsc->setSampleRate(sr);
-  carrOsc->setFreq(carrFreq);
+  carrOsc->setDefFreq(carrFreq);
 
   midiOsc = new SinOsc();
   midiOsc->setSampleRate(sr);
@@ -35,11 +35,12 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
                                  int startSample, int numSamples) {
   if (playing) {
     for (auto i = startSample; i < (startSample + numSamples); i++) {
+      carrOsc->setFreq(carrOsc->getDefFreq() * (1 + midiOsc->getNextSample()));
       float currentSample = carrOsc->getNextSample();
-      currentSample *= (1 + midiOsc->getNextSample());
+      // currentSample *= (1 + midiOsc->getNextSample());
       // Envelope
       currentSample *= env.getNextSample();
-      // Gain adjustment
+      // Gain
       currentSample = currentSample * 0.2;
       for (auto ch = 0; ch < outputBuffer.getNumChannels(); ch++) {
         outputBuffer.addSample(ch, i, currentSample);
@@ -58,7 +59,7 @@ bool SynthVoice::canPlaySound(juce::SynthesiserSound* sound) {
 void SynthVoice::setCarrFreq(float _carrFreq) {
   DBG(_carrFreq);
   carrFreq = _carrFreq;
-  carrOsc->setFreq(carrFreq);
+  carrOsc->setDefFreq(carrFreq);
 }
 void SynthVoice::setADSR(float a, float d, float s, float r) {
   envPara.attack = a;
