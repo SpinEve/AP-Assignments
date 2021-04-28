@@ -4,21 +4,25 @@
 
 SynthVoice::SynthVoice() {
   auto sr = getSampleRate();
-  sampleOsc = new SinOsc();
-  sampleOsc->setSampleRate(sr);
+  carrOsc = new SinOsc();
+  carrOsc->setSampleRate(sr);
+  carrOsc->setFreq(carrFreq);
+
+  midiOsc = new SinOsc();
+  midiOsc->setSampleRate(sr);
+
   env.setSampleRate(sr);
-  envPara.attack = 0.1f;
-  envPara.decay = 0.1f;
-  envPara.sustain = 1.0f;
-  envPara.release = 0.5f;
-  env.setParameters(envPara);
+  setADSR(0.1f, 0.1f, 1.0f, 0.2f);
 }
-SynthVoice::~SynthVoice() { delete sampleOsc; }
+SynthVoice::~SynthVoice() {
+  delete carrOsc;
+  delete midiOsc;
+}
 void SynthVoice::startNote(int midiNoteNumber, float velocity,
                            juce::SynthesiserSound* sound,
                            int currentPitchWheelPosition) {
-  float freq = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
-  sampleOsc->setFreq(freq);
+  auto freq = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
+  midiOsc->setFreq(freq);
   env.noteOn();
   playing = true;
   isOff = false;
@@ -31,9 +35,14 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
                                  int startSample, int numSamples) {
   if (playing) {
     for (auto i = startSample; i < (startSample + numSamples); i++) {
-      float currentSample = sampleOsc->getNextSample() * env.getNextSample();
+      float currentSample = carrOsc->getNextSample();
+      currentSample *= (1 + midiOsc->getNextSample());
+      // Envelope
+      currentSample *= env.getNextSample();
+      // Gain adjustment
+      currentSample = currentSample * 0.2;
       for (auto ch = 0; ch < outputBuffer.getNumChannels(); ch++) {
-        outputBuffer.addSample(ch, i, currentSample * 0.5 * (volume / 100.f));
+        outputBuffer.addSample(ch, i, currentSample);
       }
       if (isOff && !env.isActive()) {
         playing = false;
@@ -46,4 +55,15 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
 bool SynthVoice::canPlaySound(juce::SynthesiserSound* sound) {
   return dynamic_cast<SynthSound*>(sound) != nullptr;
 }
-void SynthVoice::setVolume(float _volume) { volume = _volume; }
+void SynthVoice::setCarrFreq(float _carrFreq) {
+  DBG(_carrFreq);
+  carrFreq = _carrFreq;
+  carrOsc->setFreq(carrFreq);
+}
+void SynthVoice::setADSR(float a, float d, float s, float r) {
+  envPara.attack = a;
+  envPara.decay = d;
+  envPara.release = s;
+  envPara.release = r;
+  env.setParameters(envPara);
+}

@@ -24,14 +24,15 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   //==============================================================================
   void paint(juce::Graphics&) override;
   void resized() override;
-  float getVolume();
+  float getCarrFreq();
+  void setCarrFreq(float _carrFreq);
 
  private:
   // This reference is provided as a quick way for your editor to
   // access the processor object that created it.
   Assignment3AudioProcessor& audioProcessor;
-  juce::Slider midiVolume;
-  SliderListener* volumeListener;
-  float volume;
+  juce::Slider carrFreqSlider;
+  SliderListener* carrFreqListener;
+  float carrFreq, defCarrFreq;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)
 };

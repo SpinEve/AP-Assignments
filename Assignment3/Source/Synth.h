@@ -21,15 +21,17 @@ class SynthVoice : public juce::SynthesiserVoice {
   void pitchWheelMoved(int) override {}
   void controllerMoved(int, int) override {}
   bool canPlaySound(juce::SynthesiserSound* sound) override;
-  void setVolume(float _volume);
+  void setCarrFreq(float _carrFreq);
+  void setADSR(float a, float d, float s, float r);
   ~SynthVoice();
 
  private:
   bool playing = false;
   bool isOff = false;
-  float volume = 50.f, freq = 440.f;
-  juce::Random random;
+  // juce::Random random;
   juce::ADSR env;
   juce::ADSR::Parameters envPara;
-  SinOsc* sampleOsc;
+
+  float carrFreq = 440.f;
+  SinOsc *carrOsc, *midiOsc;
 };

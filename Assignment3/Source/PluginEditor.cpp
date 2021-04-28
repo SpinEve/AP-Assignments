@@ -18,7 +18,14 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
   setSize(800, 600);
-  volumeListener = new SliderListener(&volume);
+  defCarrFreq = 440.f;
+  carrFreqListener = new SliderListener(&carrFreq);  // TODO: function pointer
+  carrFreqSlider.setRange(defCarrFreq, defCarrFreq * 4, 1.f);
+  carrFreqSlider.setValue(defCarrFreq);
+  carrFreqSlider.setDoubleClickReturnValue(true, defCarrFreq);
+  
+  carrFreqSlider.addListener(carrFreqListener);
+  addAndMakeVisible(carrFreqSlider);
 }
 
 Assignment3AudioProcessorEditor::~Assignment3AudioProcessorEditor() {}
@@ -34,17 +41,17 @@ void Assignment3AudioProcessorEditor::paint(juce::Graphics& g) {
   g.setFont(15.0f);
   g.drawFittedText("Hello World!", getLocalBounds(),
                    juce::Justification::centred, 1);
-
-  midiVolume.setRange(0.f, 100.f);
-  midiVolume.addListener(volumeListener);
-  addAndMakeVisible(midiVolume);
 }
 
 void Assignment3AudioProcessorEditor::resized() {
   // This is generally where you'll want to lay out the positions of any
   // subcomponents in your editor..
   auto Left = 20;
-  midiVolume.setBounds(Left, 20, getWidth() - Left - 10, 20);
+  carrFreqSlider.setBounds(Left, 20, getWidth() - Left - 10, 20);
 }
 
-float Assignment3AudioProcessorEditor::getVolume() { return volume; }
+float Assignment3AudioProcessorEditor::getCarrFreq() { return carrFreq; }
+void Assignment3AudioProcessorEditor::setCarrFreq(float _carrFreq) {
+  carrFreq = _carrFreq;
+  carrFreqSlider.setValue(carrFreq);
+}

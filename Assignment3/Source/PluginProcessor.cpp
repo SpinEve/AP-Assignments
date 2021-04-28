@@ -29,6 +29,8 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
     synth.addVoice(new SynthVoice());
   }
   synth.addSound(new SynthSound());
+  addParameter(carrFreq = new juce::AudioParameterFloat(
+                   "carrFreq", "Carrier Frequency", 440.f, 1760.f, 440.f));
 }
 
 Assignment3AudioProcessor::~Assignment3AudioProcessor() {}
@@ -125,13 +127,15 @@ void Assignment3AudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   Assignment3AudioProcessorEditor* ape =
       dynamic_cast<Assignment3AudioProcessorEditor*>(getActiveEditor());
   if (ape != nullptr) {
-    volume = ape->getVolume();
-    for (int i = 0; i < countVoice; i++) {
-      SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-      sv->setVolume(volume);
+    if (*carrFreq != ape->getCarrFreq()) {
+      *carrFreq = ape->getCarrFreq();
+      for (int i = 0; i < countVoice; i++) {
+        SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+        sv->setCarrFreq(*carrFreq);
+      }
     }
   }
-  // synth.noteOn(0, 57, 10.f);
+
   synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
@@ -150,10 +154,19 @@ void Assignment3AudioProcessor::getStateInformation(
   // You should use this method to store your parameters in the memory block.
   // You could do that either as raw data, or use the XML or ValueTree classes
   // as intermediaries to make it easy to save and load complex data.
+  juce::MemoryOutputStream(destData, true).writeFloat(*carrFreq);
 }
 
 void Assignment3AudioProcessor::setStateInformation(const void* data,
                                                     int sizeInBytes) {
+  *carrFreq =
+      juce::MemoryInputStream(data, static_cast<size_t>(sizeInBytes), false)
+          .readFloat();
+  Assignment3AudioProcessorEditor* ape =
+      dynamic_cast<Assignment3AudioProcessorEditor*>(getActiveEditor());
+  if (ape != nullptr) {
+    ape->setCarrFreq(*carrFreq);
+  }
   // You should use this method to restore your parameters from this memory
   // block, whose contents will have been created by the getStateInformation()
   // call.
