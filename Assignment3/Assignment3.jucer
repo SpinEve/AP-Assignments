@@ -14,7 +14,6 @@
       <FILE id="oYg1ae" name="Synth.h" compile="0" resource="0" file="Source/Synth.h"/>
       <FILE id="UZWz6L" name="Synth.cpp" compile="1" resource="0" file="Source/Synth.cpp"/>
       <FILE id="kPrup2" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="kiSqIe" name="Listener.h" compile="0" resource="0" file="Source/Listener.h"/>
       <FILE id="ZTIgAz" name="Oscillator.h" compile="0" resource="0" file="Source/Oscillator.h"/>
     </GROUP>
   </MAINGROUP>

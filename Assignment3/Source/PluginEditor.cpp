@@ -8,7 +8,6 @@
 
 #include "PluginEditor.h"
 
-#include "Listener.h"
 #include "PluginProcessor.h"
 
 //==============================================================================

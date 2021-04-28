@@ -10,7 +10,6 @@
 
 #include <JuceHeader.h>
 
-#include "Listener.h"
 #include "PluginProcessor.h"
 
 //==============================================================================
