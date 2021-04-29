@@ -34,6 +34,10 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   noiseLabel.setText("Noise Level", juce::dontSendNotification);
   noiseLabel.attachToComponent(&noiseSlider, true);
 
+  addAndMakeVisible(carrLabel);
+  carrLabel.setText("Carrier Type", juce::dontSendNotification);
+  carrLabel.attachToComponent(&carrOscTypeBox, true);
+
   float defCarrFreq = 440.f;
   addAndMakeVisible(carrFreqSlider);
   carrFreqSlider.setRange(defCarrFreq, defCarrFreq * 4, 1.f);
@@ -56,6 +60,14 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   midiOscTypeBox.addItem("Sawtooth", 5);
   midiOscTypeBox.addItem("Noise", 6);
   midiOscTypeBox.onChange = [this] { midiOscTypeBoxChanged(); };
+
+  addAndMakeVisible(carrOscTypeBox);
+  carrOscTypeBox.addItem("Sin", 1);
+  carrOscTypeBox.addItem("Cos", 2);
+  carrOscTypeBox.addItem("Tri", 3);
+  carrOscTypeBox.addItem("Square", 4);
+  carrOscTypeBox.addItem("Sawtooth", 5);
+  carrOscTypeBox.onChange = [this] { carrOscTypeBoxChanged(); };
 
   addAndMakeVisible(noiseSlider);
   noiseSlider.setRange(0.f, 1.f, 0.01f);
@@ -90,9 +102,11 @@ void Assignment3AudioProcessorEditor::resized() {
                            h);
   moduTypeBox.setBounds(leftIndent, 2 * vertIndent + h,
                         getWidth() - leftIndent - 10, h);
-  carrFreqSlider.setBounds(leftIndent, 3 * vertIndent + 2 * h,
+  carrOscTypeBox.setBounds(leftIndent, 3 * vertIndent + 2 * h,
                            getWidth() - leftIndent - 10, h);
-  noiseSlider.setBounds(leftIndent, 4 * vertIndent + 3 * h,
+  carrFreqSlider.setBounds(leftIndent, 4 * vertIndent + 3 * h,
+                           getWidth() - leftIndent - 10, h);
+  noiseSlider.setBounds(leftIndent, 5 * vertIndent + 4 * h,
                         getWidth() - leftIndent - 10, h);
 }
 void Assignment3AudioProcessorEditor::setCarrFreq(float cf) {
@@ -106,6 +120,9 @@ void Assignment3AudioProcessorEditor::freqSliderChanged() {
 }
 void Assignment3AudioProcessorEditor::midiOscTypeBoxChanged() {
   audioProcessor.setMidiOscType(midiOscTypeBox.getSelectedId());
+}
+void Assignment3AudioProcessorEditor::carrOscTypeBoxChanged() {
+  audioProcessor.setCarrOscType(carrOscTypeBox.getSelectedId());
 }
 void Assignment3AudioProcessorEditor::noiseSliderChanged() {
   audioProcessor.setNoiseLevel(noiseSlider.getValue());

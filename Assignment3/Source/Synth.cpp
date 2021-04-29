@@ -106,4 +106,20 @@ void SynthVoice::setMidiOscType(int ot) {
     midiOsc = new NoiseOsc();
   midiOsc->setSampleRate(getSampleRate());
 }
+void SynthVoice::setCarrOscType(int ot) {
+  if (carrOscType == ot) return;
+
+  delete carrOsc;
+  if (ot == 1)
+    carrOsc = new SinOsc();
+  else if (ot == 2)
+    carrOsc = new CosOsc();
+  else if (ot == 3)
+    carrOsc = new TriOsc();
+  else if (ot == 4)
+    carrOsc = new SqrOsc();
+  else if (ot == 5)
+    carrOsc = new SawOsc();
+  carrOsc->setSampleRate(getSampleRate());
+}
 void SynthVoice::setNoiseLevel(float nl) { noiseLevel = nl; }

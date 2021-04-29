@@ -26,6 +26,7 @@ class SynthVoice : public juce::SynthesiserVoice {
   void setModuType(int mt);
   void setMidiOscType(int ot);
   void setNoiseLevel(float nl);
+  void setCarrOscType(int ot);
   ~SynthVoice();
 
  private:
@@ -38,6 +39,5 @@ class SynthVoice : public juce::SynthesiserVoice {
   float carrFreq = 440.f;
   float noiseLevel = 0.f;
   Oscillator *carrOsc, *midiOsc;
-  int moduType, carrOscType;
-  int midiOscType = 1;
+  int moduType, carrOscType, midiOscType;
 };

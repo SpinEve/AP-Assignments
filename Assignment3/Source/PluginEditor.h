@@ -27,14 +27,15 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   void freqSliderChanged();
   void moduTypeBoxChanged();
   void midiOscTypeBoxChanged();
+  void carrOscTypeBoxChanged();
   void noiseSliderChanged();
 
  private:
   // This reference is provided as a quick way for your editor to
   // access the processor object that created it.
   Assignment3AudioProcessor& audioProcessor;
-  juce::Label freqLabel, moduLabel, midiLabel, noiseLabel;
+  juce::Label freqLabel, moduLabel, midiLabel, noiseLabel, carrLabel;
   juce::Slider carrFreqSlider, noiseSlider;
-  juce::ComboBox moduTypeBox, midiOscTypeBox;
+  juce::ComboBox moduTypeBox, midiOscTypeBox, carrOscTypeBox;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)
 };

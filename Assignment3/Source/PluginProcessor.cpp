@@ -181,6 +181,13 @@ void Assignment3AudioProcessor::setMidiOscType(int ot) {
     sv->setMidiOscType(midiOscType);
   }
 }
+void Assignment3AudioProcessor::setCarrOscType(int ot) {
+  carrOscType = ot;
+  for (int i = 0; i < countVoice; i++) {
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->setCarrOscType(carrOscType);
+  }
+}
 void Assignment3AudioProcessor::setNoiseLevel(float nl) {
   noiseLevel = nl;
   for (int i = 0; i < countVoice; i++) {
