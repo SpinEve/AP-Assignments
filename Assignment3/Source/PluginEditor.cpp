@@ -20,10 +20,19 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
 
   addAndMakeVisible(freqLabel);
   freqLabel.setText("Carrier Frequency", juce::dontSendNotification);
+  freqLabel.attachToComponent(&carrFreqSlider, true);
+
   addAndMakeVisible(moduLabel);
   moduLabel.setText("Modulation Method", juce::dontSendNotification);
+  moduLabel.attachToComponent(&moduTypeBox, true);
+
   addAndMakeVisible(midiLabel);
   midiLabel.setText("MIDI Type", juce::dontSendNotification);
+  midiLabel.attachToComponent(&midiOscTypeBox, true);
+
+  addAndMakeVisible(noiseLabel);
+  noiseLabel.setText("Noise Level", juce::dontSendNotification);
+  noiseLabel.attachToComponent(&noiseSlider, true);
 
   float defCarrFreq = 440.f;
   addAndMakeVisible(carrFreqSlider);
@@ -73,20 +82,18 @@ void Assignment3AudioProcessorEditor::paint(juce::Graphics& g) {
 void Assignment3AudioProcessorEditor::resized() {
   // This is generally where you'll want to lay out the positions of any
   // subcomponents in your editor..
-  auto indent = 10;
+  auto leftIndent = 120;
+  auto vertIndent = 10;
   auto h = 20;
 
-  midiLabel.setBounds(indent, indent, getWidth() - 2 * indent, h);
-  midiOscTypeBox.setBounds(indent, 2 * indent + h, getWidth() - 2 * indent, h);
-
-  moduLabel.setBounds(indent, 3 * indent + 2 * h, getWidth() - 2 * indent, h);
-  moduTypeBox.setBounds(indent, 4 * indent + 3 * h, getWidth() - 2 * indent, h);
-
-  freqLabel.setBounds(indent, 5 * indent + 4 * h, getWidth() - 2 * indent, h);
-  carrFreqSlider.setBounds(indent, 6 * indent + 5 * h, getWidth() - 2 * indent,
+  midiOscTypeBox.setBounds(leftIndent, vertIndent, getWidth() - leftIndent - 10,
                            h);
-
-  noiseSlider.setBounds(indent, 7 * indent + 6 * h, getWidth() - 2 * indent, h);
+  moduTypeBox.setBounds(leftIndent, 2 * vertIndent + h,
+                        getWidth() - leftIndent - 10, h);
+  carrFreqSlider.setBounds(leftIndent, 3 * vertIndent + 2 * h,
+                           getWidth() - leftIndent - 10, h);
+  noiseSlider.setBounds(leftIndent, 4 * vertIndent + 3 * h,
+                        getWidth() - leftIndent - 10, h);
 }
 void Assignment3AudioProcessorEditor::setCarrFreq(float cf) {
   carrFreqSlider.setValue(cf);
@@ -98,12 +105,7 @@ void Assignment3AudioProcessorEditor::freqSliderChanged() {
   audioProcessor.setCarrFreq(carrFreqSlider.getValue());
 }
 void Assignment3AudioProcessorEditor::midiOscTypeBoxChanged() {
-  int id = midiOscTypeBox.getSelectedId();
-  if (id == 1)
-    carrFreqSlider.setEnabled(false);
-  else
-    carrFreqSlider.setEnabled(true);
-  audioProcessor.setMidiOscType(id);
+  audioProcessor.setMidiOscType(midiOscTypeBox.getSelectedId());
 }
 void Assignment3AudioProcessorEditor::noiseSliderChanged() {
   audioProcessor.setNoiseLevel(noiseSlider.getValue());
