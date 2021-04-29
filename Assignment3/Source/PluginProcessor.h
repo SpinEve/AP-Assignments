@@ -60,11 +60,10 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
 
  private:
   //==============================================================================
-  juce::Synthesiser synth;
-  int countVoice = 4;
-  juce::AudioParameterFloat* carrFreq;
+  float noiseLevel, gain;
+  int countVoice, moduType, midiOscType, carrOscType;
   double sr;
-  float noiseLevel;
-  int moduType, midiOscType, carrOscType;
+  juce::Synthesiser synth;
+  juce::AudioParameterFloat* carrFreq;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessor)
 };

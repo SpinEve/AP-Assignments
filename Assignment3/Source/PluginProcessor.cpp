@@ -25,6 +25,7 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
       )
 #endif
 {
+  countVoice = 4;
   for (auto i = 0; i < countVoice; i++) {
     synth.addVoice(new SynthVoice());
   }
@@ -193,6 +194,13 @@ void Assignment3AudioProcessor::setNoiseLevel(float nl) {
   for (int i = 0; i < countVoice; i++) {
     SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
     sv->setNoiseLevel(noiseLevel);
+  }
+}
+void Assignment3AudioProcessor::setGain(float g) {
+  gain = g;
+  for (int i = 0; i < countVoice; i++) {
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->setGain(gain);
   }
 }
 //==============================================================================
