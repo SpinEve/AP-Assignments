@@ -3,6 +3,12 @@
 #include <JuceHeader.h>
 
 SynthVoice::SynthVoice() {
+  gain = 0.5f;
+  carrFreq = 440.f;
+  noiseLevel = 0.f;
+  playing = false;
+  isOff = false;
+
   auto sr = getSampleRate();
   carrOsc = new SinOsc();
   carrOsc->setSampleRate(sr);
@@ -35,7 +41,6 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
                                  int startSample, int numSamples) {
   if (playing) {
     for (auto i = startSample; i < (startSample + numSamples); i++) {
-      float currentSample;
       // Modulation Part
       if (moduType == 1) {  // No Modulation
         currentSample = midiOsc->getNextSample();
@@ -54,9 +59,8 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
           random.nextFloat() * noiseLevel + currentSample * (1.f - noiseLevel);
       // Envelope
       currentSample *= env.getNextSample();
-      // Gain
-      // TODO: gain slider
-      currentSample *= 0.2;
+      // Gain, halved so not too loud
+      currentSample *= gain / 2;
       // Render
       for (auto ch = 0; ch < outputBuffer.getNumChannels(); ch++) {
         outputBuffer.addSample(ch, i, currentSample);
@@ -123,3 +127,4 @@ void SynthVoice::setCarrOscType(int ot) {
   carrOsc->setSampleRate(getSampleRate());
 }
 void SynthVoice::setNoiseLevel(float nl) { noiseLevel = nl; }
+void SynthVoice::setGain(float g) { gain = g; };

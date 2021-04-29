@@ -10,3 +10,4 @@ AS3 TODO:
 - [x] Noise generator and percentage
 - [ ] Layout enchancement
 - [ ] String "encoding" using harmonic
+- [ ] Preset saving

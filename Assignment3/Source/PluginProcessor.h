@@ -56,6 +56,7 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
   void setMidiOscType(int ot);
   void setNoiseLevel(float nl);
   void setCarrOscType(int ot);
+  void setGain(float g);
 
  private:
   //==============================================================================
