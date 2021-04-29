@@ -32,6 +32,9 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity,
                            int currentPitchWheelPosition) {
   auto freq = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
   midiOsc->setFreq(freq);
+  if (harEnabled) {
+    for (int i = 0; i < cntHar; i++) harOsc[i]->setFreq(freq * (i + 2));
+  }
   env.noteOn();
   playing = true;
   isOff = false;
