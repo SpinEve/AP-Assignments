@@ -8,6 +8,8 @@ SynthVoice::SynthVoice() {
   noiseLevel = 0.f;
   playing = false;
   isOff = false;
+  harEnabled = false;
+  cntHar = 8;
 
   auto sr = getSampleRate();
   carrOsc = new SinOsc();
@@ -23,6 +25,7 @@ SynthVoice::SynthVoice() {
 SynthVoice::~SynthVoice() {
   delete carrOsc;
   delete midiOsc;
+  delete[] harOsc;
 }
 void SynthVoice::startNote(int midiNoteNumber, float velocity,
                            juce::SynthesiserSound* sound,
@@ -41,18 +44,23 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
                                  int startSample, int numSamples) {
   if (playing) {
     for (auto i = startSample; i < (startSample + numSamples); i++) {
+      currentSample = midiOsc->getNextSample();
+      if (harEnabled) {
+        float harSample = 0.f;
+        for (int i = 0; i < cntHar; i++)
+          harSample += harOsc[i]->getNextSample();
+        currentSample += 0.5f * harSample;
+      }
       // Modulation Part
       if (moduType == 1) {  // No Modulation
-        currentSample = midiOsc->getNextSample();
+        // Do nothing
       } else if (moduType == 2) {  // FM
-        carrOsc->setFreq(carrOsc->getDefFreq() *
-                         (1 + midiOsc->getNextSample()));
+        carrOsc->setFreq(carrOsc->getDefFreq() * (1 + currentSample));
         currentSample = carrOsc->getNextSample();
       } else if (moduType == 3) {  // PM
-        currentSample = carrOsc->getShiftedSample(midiOsc->getNextSample());
+        currentSample = carrOsc->getShiftedSample(currentSample);
       } else if (moduType == 4) {  // AM
-        currentSample =
-            carrOsc->getNextSample() * (1 + midiOsc->getNextSample());
+        currentSample = carrOsc->getNextSample() * (1 + currentSample);
       }
       // Add some noise
       currentSample =
@@ -92,39 +100,57 @@ void SynthVoice::setModuType(int mt) {
   moduType = mt;
   carrOsc->clear();  // Reset the carrier osc
 }
+Oscillator* selectOsc(int ot) {
+  if (ot == 1)
+    return new SinOsc();
+  else if (ot == 2)
+    return new CosOsc();
+  else if (ot == 3)
+    return new TriOsc();
+  else if (ot == 4)
+    return new SqrOsc();
+  else if (ot == 5)
+    return new SawOsc();
+  else
+    return new NoiseOsc();
+}
 void SynthVoice::setMidiOscType(int ot) {
+  // No change
   if (midiOscType == ot) return;
 
   delete midiOsc;
-  if (ot == 1)
-    midiOsc = new SinOsc();
-  else if (ot == 2)
-    midiOsc = new CosOsc();
-  else if (ot == 3)
-    midiOsc = new TriOsc();
-  else if (ot == 4)
-    midiOsc = new SqrOsc();
-  else if (ot == 5)
-    midiOsc = new SawOsc();
-  else if (ot == 6)
-    midiOsc = new NoiseOsc();
+  midiOsc = selectOsc(midiOscType);
   midiOsc->setSampleRate(getSampleRate());
+  // also change harmonics if it's enabled
+  if (harEnabled) {
+    for (int i = 0; i < cntHar; i++) {
+      delete harOsc[i];
+      harOsc[i] = selectOsc(midiOscType);
+      harOsc[i]->setSampleRate(getSampleRate());
+    }
+  }
 }
 void SynthVoice::setCarrOscType(int ot) {
   if (carrOscType == ot) return;
 
   delete carrOsc;
-  if (ot == 1)
-    carrOsc = new SinOsc();
-  else if (ot == 2)
-    carrOsc = new CosOsc();
-  else if (ot == 3)
-    carrOsc = new TriOsc();
-  else if (ot == 4)
-    carrOsc = new SqrOsc();
-  else if (ot == 5)
-    carrOsc = new SawOsc();
+  carrOsc = selectOsc(carrOscType);
   carrOsc->setSampleRate(getSampleRate());
 }
 void SynthVoice::setNoiseLevel(float nl) { noiseLevel = nl; }
 void SynthVoice::setGain(float g) { gain = g; };
+void SynthVoice::setHar(bool enabled) {
+  // No change
+  if (enabled == harEnabled) return;
+  if (enabled) {  // Enable it
+    harEnabled = true;
+    for (int i = 0; i < cntHar; i++) {
+      delete harOsc[i];
+      harOsc[i] = selectOsc(midiOscType);
+      harOsc[i]->setSampleRate(getSampleRate());
+    }
+  } else {  // Disable it
+    harEnabled = false;
+    for (int i = 0; i < cntHar; i++) delete harOsc[i];
+  }
+}

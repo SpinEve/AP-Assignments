@@ -28,13 +28,15 @@ class SynthVoice : public juce::SynthesiserVoice {
   void setNoiseLevel(float nl);
   void setCarrOscType(int ot);
   void setGain(float g);
+  void setHar(bool enabled);
   ~SynthVoice();
 
  private:
-  bool playing, isOff;
+  bool playing, isOff, harEnabled;
   float currentSample, gain, carrFreq, noiseLevel;
-  int moduType, carrOscType, midiOscType;
+  int moduType, carrOscType, midiOscType, cntHar;
   Oscillator *carrOsc, *midiOsc;
+  Oscillator* harOsc[8];
   juce::Random random;
   juce::ADSR env;
   juce::ADSR::Parameters envPara;
