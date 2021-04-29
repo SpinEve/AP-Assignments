@@ -24,16 +24,20 @@ class SynthVoice : public juce::SynthesiserVoice {
   void setCarrFreq(float cf);
   void setADSR(float a, float d, float s, float r);
   void setModuType(int mt);
+  void setMidiOscType(int ot);
+  void setNoiseLevel(float nl);
   ~SynthVoice();
 
  private:
   bool playing = false;
   bool isOff = false;
-  // juce::Random random;
+  juce::Random random;
   juce::ADSR env;
   juce::ADSR::Parameters envPara;
 
   float carrFreq = 440.f;
+  float noiseLevel = 0.f;
   Oscillator *carrOsc, *midiOsc;
-  int moduType, carrOscType, midiOscType;
+  int moduType, carrOscType;
+  int midiOscType = 1;
 };

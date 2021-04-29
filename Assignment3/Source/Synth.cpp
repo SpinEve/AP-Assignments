@@ -12,7 +12,7 @@ SynthVoice::SynthVoice() {
   midiOsc->setSampleRate(sr);
 
   env.setSampleRate(sr);
-  setADSR(0.1f, 0.1f, 1.0f, 0.2f);
+  setADSR(0.1f, 0.1f, 1.0f, 0.2f);  // TODO: ADSR slider?
 }
 SynthVoice::~SynthVoice() {
   delete carrOsc;
@@ -49,9 +49,13 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
         currentSample =
             carrOsc->getNextSample() * (1 + midiOsc->getNextSample());
       }
+      // Add some noise
+      currentSample =
+          random.nextFloat() * noiseLevel + currentSample * (1.f - noiseLevel);
       // Envelope
       currentSample *= env.getNextSample();
       // Gain
+      // TODO: gain slider
       currentSample *= 0.2;
       // Render
       for (auto ch = 0; ch < outputBuffer.getNumChannels(); ch++) {
@@ -84,3 +88,22 @@ void SynthVoice::setModuType(int mt) {
   moduType = mt;
   carrOsc->clear();  // Reset the carrier osc
 }
+void SynthVoice::setMidiOscType(int ot) {
+  if (midiOscType == ot) return;
+
+  delete midiOsc;
+  if (ot == 1)
+    midiOsc = new SinOsc();
+  else if (ot == 2)
+    midiOsc = new CosOsc();
+  else if (ot == 3)
+    midiOsc = new TriOsc();
+  else if (ot == 4)
+    midiOsc = new SqrOsc();
+  else if (ot == 5)
+    midiOsc = new SawOsc();
+  else if (ot == 6)
+    midiOsc = new NoiseOsc();
+  midiOsc->setSampleRate(getSampleRate());
+}
+void SynthVoice::setNoiseLevel(float nl) { noiseLevel = nl; }

@@ -53,6 +53,8 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
   void setStateInformation(const void* data, int sizeInBytes) override;
   void setModuType(int mt);
   void setCarrFreq(float cf);
+  void setMidiOscType(int ot);
+  void setNoiseLevel(float nl);
 
  private:
   //==============================================================================
@@ -60,6 +62,7 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
   int countVoice = 4;
   juce::AudioParameterFloat* carrFreq;
   double sr;
-  int moduType;
+  float noiseLevel;
+  int moduType, midiOscType;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessor)
 };

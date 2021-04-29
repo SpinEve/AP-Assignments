@@ -33,7 +33,7 @@ class Oscillator {
     return output(phase);
   }
 
-  // Mainly for phase modulation (PM) that extra shift is added to phase
+  // For phase modulation (PM) where extra shift is added to phase
   float getShiftedSample(float shift) {
     phase += phaseDelta;
     if (phase > 1.0f) phase -= 1.f;
@@ -98,4 +98,11 @@ class SawOsc : public Oscillator {
  public:
   SawOsc(float sr = 48000.f, float f = 440.f) : Oscillator(sr, f) {}
   float output(float p) override { return 2 * p - 1; }
+};
+
+// Noise Oscillator
+class NoiseOsc : public Oscillator {
+ public:
+  NoiseOsc(float sr = 48000.f, float f = 440.f) : Oscillator(sr, f) {}
+  float output(float p) override { return 2 * ((float)rand() / RAND_MAX) - 1.f; }
 };

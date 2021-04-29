@@ -174,7 +174,20 @@ void Assignment3AudioProcessor::setCarrFreq(float cf) {
     sv->setCarrFreq((*carrFreq));
   }
 }
-
+void Assignment3AudioProcessor::setMidiOscType(int ot) {
+  midiOscType = ot;
+  for (int i = 0; i < countVoice; i++) {
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->setMidiOscType(midiOscType);
+  }
+}
+void Assignment3AudioProcessor::setNoiseLevel(float nl) {
+  noiseLevel = nl;
+  for (int i = 0; i < countVoice; i++) {
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->setNoiseLevel(noiseLevel);
+  }
+}
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
