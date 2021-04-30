@@ -20,7 +20,7 @@ SynthVoice::SynthVoice() {
   midiOsc->setSampleRate(sr);
 
   env.setSampleRate(sr);
-  setADSR(0.1f, 0.1f, 1.0f, 0.2f);  // TODO: ADSR slider?
+  setADSR(0.1f, 0.1f, 1.0f, 0.5f);
 }
 SynthVoice::~SynthVoice() {
   delete carrOsc;
@@ -33,7 +33,10 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity,
   auto freq = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
   midiOsc->setFreq(freq);
   if (harEnabled) {
-    for (int i = 0; i < cntHar; i++) harOsc[i]->setFreq(freq * (i + 2));
+    for (int i = 0; i < cntHar; i++) {
+      harOsc[i]->setFreq(freq * (i + 2));
+      harAmp[i] = 1 / (i + 1);
+    }
   }
   env.noteOn();
   playing = true;
@@ -52,8 +55,8 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
       if (harEnabled) {
         float harSample = 0.f;
         for (int i = 0; i < cntHar; i++)
-          harSample += harOsc[i]->getNextSample();
-        currentSample += 0.5f * harSample;
+          harSample += harOsc[i]->getNextSample() * harAmp[i];
+        currentSample += harSample;
       }
       // Modulation Part
       if (moduType == 1) {  // No Modulation
@@ -67,8 +70,8 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
         currentSample = carrOsc->getNextSample() * (1 + currentSample);
       }
       // Add some noise
-      currentSample =
-          random.nextFloat() * noiseLevel + currentSample * (1.f - noiseLevel);
+      currentSample = (2 * random.nextFloat() - 1) * noiseLevel +
+                      currentSample * (1.f - noiseLevel);
       // Envelope
       currentSample *= env.getNextSample();
       // Gain, halved so not too loud

@@ -35,8 +35,9 @@ class SynthVoice : public juce::SynthesiserVoice {
   bool playing, isOff, harEnabled;
   float currentSample, gain, carrFreq, noiseLevel;
   int moduType, carrOscType, midiOscType, cntHar;
-  Oscillator *carrOsc, *midiOsc;
+  Oscillator *carrOsc, *midiOsc, *LFOsc;
   Oscillator* harOsc[8];
+  float harAmp[8];
   juce::Random random;
   juce::ADSR env;
   juce::ADSR::Parameters envPara;

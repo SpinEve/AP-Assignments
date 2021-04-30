@@ -50,6 +50,9 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   gainLabel.setText("Gain", juce::dontSendNotification);
   gainLabel.attachToComponent(&gainSlider, true);
 
+  addAndMakeVisible(ADSRLabel);
+  ADSRLabel.setText("ADSR Adjustment", juce::dontSendNotification);
+
   // Sliders
   float defCarrFreq = 440.f;
   initSlider(carrFreqSlider, defCarrFreq, defCarrFreq * 4, 1.f, defCarrFreq);
@@ -107,11 +110,6 @@ void Assignment3AudioProcessorEditor::paint(juce::Graphics& g) {
   // solid colour)
   g.fillAll(
       getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-
-  g.setColour(juce::Colours::white);
-  g.setFont(15.0f);
-  g.drawFittedText("Hello World!", getLocalBounds(),
-                   juce::Justification::centred, 1);
 }
 void Assignment3AudioProcessorEditor::resized() {
   // This is generally where you'll want to lay out the positions of any
@@ -133,13 +131,15 @@ void Assignment3AudioProcessorEditor::resized() {
   gainSlider.setBounds(leftIndent, 6 * vertIndent + 5 * h,
                        getWidth() - leftIndent - 10, h);
 
+  ADSRLabel.setBounds(20, 7 * vertIndent + 6 * h,
+                      getWidth() - leftIndent - 10, h);
   auto adsrWidth = getWidth() / 4 - 15;
-  attackSlider.setBounds(20, 7 * vertIndent + 6 * h, adsrWidth, h);
-  sustainSlider.setBounds(20 + adsrWidth + 10, 7 * vertIndent + 6 * h,
+  attackSlider.setBounds(20, 8 * vertIndent + 7 * h, adsrWidth, h);
+  sustainSlider.setBounds(20 + adsrWidth + 10, 8 * vertIndent + 7 * h,
                           adsrWidth, h);
-  delaySlider.setBounds(20 + 2 * (adsrWidth + 10), 7 * vertIndent + 6 * h,
+  delaySlider.setBounds(20 + 2 * (adsrWidth + 10), 8 * vertIndent + 7 * h,
                         adsrWidth, h);
-  releaseSlider.setBounds(20 + 3 * (adsrWidth + 10), 7 * vertIndent + 6 * h,
+  releaseSlider.setBounds(20 + 3 * (adsrWidth + 10), 8 * vertIndent + 7 * h,
                           adsrWidth, h);
 }
 void Assignment3AudioProcessorEditor::setCarrFreq(float cf) {

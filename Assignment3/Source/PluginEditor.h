@@ -38,7 +38,8 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   // This reference is provided as a quick way for your editor to
   // access the processor object that created it.
   Assignment3AudioProcessor& audioProcessor;
-  juce::Label freqLabel, moduLabel, midiLabel, noiseLabel, carrLabel, gainLabel;
+  juce::Label freqLabel, moduLabel, midiLabel, noiseLabel, carrLabel, gainLabel,
+      ADSRLabel;
   juce::Slider carrFreqSlider, noiseSlider, gainSlider;
   juce::Slider attackSlider, delaySlider, sustainSlider, releaseSlider;
   juce::ComboBox moduTypeBox, midiOscTypeBox, carrOscTypeBox;
