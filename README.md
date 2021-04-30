@@ -11,3 +11,4 @@ AS3 TODO:
 - [ ] Layout enchancement
 - [ ] String "encoding" using harmonic
 - [ ] Preset saving
+- [ ] Filters

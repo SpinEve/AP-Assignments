@@ -55,7 +55,9 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
 
   // Sliders
   float defCarrFreq = 440.f;
-  initSlider(carrFreqSlider, defCarrFreq, defCarrFreq * 4, 1.f, defCarrFreq);
+  initSlider(carrFreqSlider, defCarrFreq / 8, defCarrFreq * 8, 1.f,
+             defCarrFreq);
+  carrFreqSlider.setSkewFactorFromMidPoint(defCarrFreq);
   carrFreqSlider.onValueChange = [this] { freqSliderChanged(); };
 
   initSlider(noiseSlider, 0.f, 1.f, 0.01f, 0.f);
@@ -100,6 +102,15 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   carrOscTypeBox.addItem("Square", 4);
   carrOscTypeBox.addItem("Sawtooth", 5);
   carrOscTypeBox.onChange = [this] { carrOscTypeBoxChanged(); };
+
+  addAndMakeVisible(encodeButton);
+  encodeButton.setButtonText("Text encoder");
+  encodeButton.onClick = [this] { encodeButtonClicked(); };
+
+  addAndMakeVisible(encodeText);
+  encodeText.setInputRestrictions(32, "abcdefghijklmnopqrstuvwxyz ");
+  encodeText.onTextChange = [this] { encodeTextChanged(); };
+  encodeText.setVisible(false);
 }
 
 Assignment3AudioProcessorEditor::~Assignment3AudioProcessorEditor() {}
@@ -131,8 +142,8 @@ void Assignment3AudioProcessorEditor::resized() {
   gainSlider.setBounds(leftIndent, 6 * vertIndent + 5 * h,
                        getWidth() - leftIndent - 10, h);
 
-  ADSRLabel.setBounds(20, 7 * vertIndent + 6 * h,
-                      getWidth() - leftIndent - 10, h);
+  ADSRLabel.setBounds(20, 7 * vertIndent + 6 * h, getWidth() - leftIndent - 10,
+                      h);
   auto adsrWidth = getWidth() / 4 - 15;
   attackSlider.setBounds(20, 8 * vertIndent + 7 * h, adsrWidth, h);
   sustainSlider.setBounds(20 + adsrWidth + 10, 8 * vertIndent + 7 * h,
@@ -141,6 +152,10 @@ void Assignment3AudioProcessorEditor::resized() {
                         adsrWidth, h);
   releaseSlider.setBounds(20 + 3 * (adsrWidth + 10), 8 * vertIndent + 7 * h,
                           adsrWidth, h);
+  encodeButton.setBounds(20, 9 * vertIndent + 8 * h,
+                         getWidth() - leftIndent - 10, h);
+  encodeText.setBounds(20, 10 * vertIndent + 9 * h,
+                       getWidth() - leftIndent - 10, h);
 }
 void Assignment3AudioProcessorEditor::setCarrFreq(float cf) {
   carrFreqSlider.setValue(cf);
@@ -166,4 +181,19 @@ void Assignment3AudioProcessorEditor::gainSliderChanged() {
 void Assignment3AudioProcessorEditor::ADSRChanged() {
   audioProcessor.setADSR(attackSlider.getValue(), delaySlider.getValue(),
                          sustainSlider.getValue(), releaseSlider.getValue());
+}
+void Assignment3AudioProcessorEditor::encodeButtonClicked() {
+  auto state = encodeButton.getToggleState();
+  if (state) {
+    encodeText.setVisible(true);
+    midiOscTypeBox.setSelectedId(1);  // Sin oscillator for encoding
+  } else {
+    encodeText.setVisible(false);
+    encodeText.clear();
+  }
+}
+void Assignment3AudioProcessorEditor::encodeTextChanged() {
+  if (encodeButton.getToggleState()) {
+    audioProcessor.setEncodeText(encodeText.getText());
+  }
 }

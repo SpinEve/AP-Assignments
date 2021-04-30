@@ -19,6 +19,10 @@ SynthVoice::SynthVoice() {
   midiOsc = new SinOsc();
   midiOsc->setSampleRate(sr);
 
+  LFOsc = new OneOsc();
+  LFOsc->setSampleRate(sr);
+  LFOsc->setDefFreq(1.f);
+
   env.setSampleRate(sr);
   setADSR(0.1f, 0.1f, 1.0f, 0.5f);
 }
@@ -38,6 +42,7 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity,
       harAmp[i] = 1 / (i + 1);
     }
   }
+  LFOsc->clear();
   env.noteOn();
   playing = true;
   isOff = false;

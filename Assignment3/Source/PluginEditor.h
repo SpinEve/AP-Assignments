@@ -33,6 +33,8 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   void ADSRChanged();
   void initSlider(juce::Slider& sld, float min, float max, float interVal,
                   float defVal);
+  void encodeButtonClicked();
+  void encodeTextChanged();
 
  private:
   // This reference is provided as a quick way for your editor to
@@ -43,5 +45,7 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   juce::Slider carrFreqSlider, noiseSlider, gainSlider;
   juce::Slider attackSlider, delaySlider, sustainSlider, releaseSlider;
   juce::ComboBox moduTypeBox, midiOscTypeBox, carrOscTypeBox;
+  juce::TextEditor encodeText;
+  juce::ToggleButton encodeButton;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)
 };

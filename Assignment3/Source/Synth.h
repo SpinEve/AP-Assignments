@@ -41,4 +41,5 @@ class SynthVoice : public juce::SynthesiserVoice {
   juce::Random random;
   juce::ADSR env;
   juce::ADSR::Parameters envPara;
+  // juce::IIRFilter()
 };

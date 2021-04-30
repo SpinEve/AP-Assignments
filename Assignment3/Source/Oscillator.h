@@ -104,5 +104,14 @@ class SawOsc : public Oscillator {
 class NoiseOsc : public Oscillator {
  public:
   NoiseOsc(float sr = 48000.f, float f = 440.f) : Oscillator(sr, f) {}
-  float output(float p) override { return 2 * ((float)rand() / RAND_MAX) - 1.f; }
+  float output(float p) override {
+    return 2 * ((float)rand() / RAND_MAX) - 1.f;
+  }
+};
+
+// "One" Oscillator, only output 1
+class OneOsc : public Oscillator {
+ public:
+  OneOsc(float sr = 48000.f, float f = 440.f) : Oscillator(sr, f) {}
+  float output(float p) override { return 1.f; }
 };
