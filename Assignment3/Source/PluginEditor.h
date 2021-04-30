@@ -35,6 +35,7 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
                   float defVal);
   void encodeButtonClicked();
   void encodeTextChanged();
+  void setLFO1();
 
  private:
   // This reference is provided as a quick way for your editor to
@@ -43,8 +44,10 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   juce::Label freqLabel, moduLabel, midiLabel, noiseLabel, carrLabel, gainLabel,
       ADSRLabel;
   juce::Slider carrFreqSlider, noiseSlider, gainSlider;
-  juce::Slider attackSlider, delaySlider, sustainSlider, releaseSlider;
-  juce::ComboBox moduTypeBox, midiOscTypeBox, carrOscTypeBox;
+  juce::Slider attackSlider, delaySlider, sustainSlider, releaseSlider,
+      LFO1Slider;
+  juce::ComboBox moduTypeBox, midiOscTypeBox, carrOscTypeBox, LFO1TypeBox,
+      LFO1ModuTypeBox;
   juce::TextEditor encodeText;
   juce::ToggleButton encodeButton;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)

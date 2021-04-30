@@ -215,8 +215,14 @@ void Assignment3AudioProcessor::setADSR(float a, float d, float s, float r) {
 }
 void Assignment3AudioProcessor::setEncodeText(juce::String s) {
   for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    // SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
     // sv->setEncodeText(s);
+  }
+}
+void Assignment3AudioProcessor::setLFO1(int type, int mt, float freq) {
+  for (int i = 0; i < countVoice; i++) {
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->setLFO1(type, mt, freq);
   }
 }
 //==============================================================================

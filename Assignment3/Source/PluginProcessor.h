@@ -58,6 +58,7 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
   void setCarrOscType(int ot);
   void setGain(float g);
   void setADSR(float a, float d, float s, float r);
+  void setLFO1(int type, int mt, float freq);
   void setEncodeText(juce::String s);
 
  private:

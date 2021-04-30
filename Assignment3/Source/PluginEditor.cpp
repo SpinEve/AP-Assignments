@@ -9,6 +9,7 @@
 #include "PluginEditor.h"
 
 #include "PluginProcessor.h"
+/// Init sliders
 void Assignment3AudioProcessorEditor::initSlider(juce::Slider& sld, float min,
                                                  float max, float interVal,
                                                  float defVal) {
@@ -78,6 +79,12 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   initSlider(releaseSlider, 0.f, 2.f, 0.01f, 0.5f);
   releaseSlider.onValueChange = [this] { ADSRChanged(); };
 
+  initSlider(LFO1Slider, 0.f, 1.f, 0.01f, 0.1f);
+  LFO1Slider.onValueChange = [this] { setLFO1(); };
+
+  // initSlider(osc2Slider, 0.f, 1.f, 0.01f, 0.1f);
+  // osc2Slider.onValueChange = [this] { osc2SliderChanged(); };
+
   // Boxes
   addAndMakeVisible(moduTypeBox);
   moduTypeBox.addItem("None", 1);
@@ -102,6 +109,21 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   carrOscTypeBox.addItem("Square", 4);
   carrOscTypeBox.addItem("Sawtooth", 5);
   carrOscTypeBox.onChange = [this] { carrOscTypeBoxChanged(); };
+
+  addAndMakeVisible(LFO1TypeBox);
+  LFO1TypeBox.addItem("Sin", 1);
+  LFO1TypeBox.addItem("Cos", 2);
+  LFO1TypeBox.addItem("Tri", 3);
+  LFO1TypeBox.addItem("Square", 4);
+  LFO1TypeBox.addItem("Sawtooth", 5);
+  LFO1TypeBox.onChange = [this] { setLFO1(); };
+
+  addAndMakeVisible(LFO1ModuTypeBox);
+  LFO1ModuTypeBox.addItem("None", 1);
+  LFO1ModuTypeBox.addItem("FM", 2);
+  LFO1ModuTypeBox.addItem("PM", 3);
+  LFO1ModuTypeBox.addItem("AM", 4);
+  LFO1ModuTypeBox.onChange = [this] { setLFO1(); };
 
   addAndMakeVisible(encodeButton);
   encodeButton.setButtonText("Text encoder");
@@ -196,4 +218,9 @@ void Assignment3AudioProcessorEditor::encodeTextChanged() {
   if (encodeButton.getToggleState()) {
     audioProcessor.setEncodeText(encodeText.getText());
   }
+}
+void Assignment3AudioProcessorEditor::setLFO1() {
+  audioProcessor.setLFO1(LFO1TypeBox.getSelectedId(),
+                         LFO1ModuTypeBox.getSelectedId(),
+                         LFO1Slider.getValue());
 }

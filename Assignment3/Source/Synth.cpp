@@ -19,9 +19,8 @@ SynthVoice::SynthVoice() {
   midiOsc = new SinOsc();
   midiOsc->setSampleRate(sr);
 
-  LFOsc = new OneOsc();
-  LFOsc->setSampleRate(sr);
-  LFOsc->setDefFreq(1.f);
+  LFO1ModuType = 1;  // No modulation
+  moduType = 1;
 
   env.setSampleRate(sr);
   setADSR(0.1f, 0.1f, 1.0f, 0.5f);
@@ -39,10 +38,9 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity,
   if (harEnabled) {
     for (int i = 0; i < cntHar; i++) {
       harOsc[i]->setFreq(freq * (i + 2));
-      harAmp[i] = 1 / (i + 1);
+      harAmp[i] = 1.f / (i + 1);
     }
   }
-  LFOsc->clear();
   env.noteOn();
   playing = true;
   isOff = false;
@@ -51,29 +49,35 @@ void SynthVoice::stopNote(float velocity, bool allowTailOff) {
   env.noteOff();
   isOff = true;
 }
+float modulate(Oscillator* carrOsc, float sample, int type) {
+  if (type <= 1) {  // No modulation
+    sample = carrOsc->getNextSample();
+  } else if (type == 2) {  // FM
+    carrOsc->setFreq(carrOsc->getDefFreq() * (1 + sample));
+    sample = carrOsc->getNextSample();
+  } else if (type == 3) {  // PM
+    sample = carrOsc->getShiftedSample(sample);
+    carrOsc->getNextSample();
+  } else if (type == 4) {  // AM
+    sample = carrOsc->getNextSample() * (1 + sample);
+  }
+  return sample;
+}
 void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
                                  int startSample, int numSamples) {
   if (playing) {
     for (auto i = startSample; i < (startSample + numSamples); i++) {
-      currentSample = midiOsc->getNextSample();
-      // Harmonics Part
+      float LFOSample = 0;
+      if (LFO1 != nullptr) LFOSample = LFO1->getNextSample();
+      currentSample = modulate(midiOsc, LFOSample, LFO1ModuType);
       if (harEnabled) {
         float harSample = 0.f;
-        for (int i = 0; i < cntHar; i++)
-          harSample += harOsc[i]->getNextSample() * harAmp[i];
+        for (auto j = 0; j < cntHar; j++)
+          harSample += modulate(harOsc[j], LFOSample, LFO1ModuType) * harAmp[j];
         currentSample += harSample;
       }
       // Modulation Part
-      if (moduType == 1) {  // No Modulation
-        // Do nothing
-      } else if (moduType == 2) {  // FM
-        carrOsc->setFreq(carrOsc->getDefFreq() * (1 + currentSample));
-        currentSample = carrOsc->getNextSample();
-      } else if (moduType == 3) {  // PM
-        currentSample = carrOsc->getShiftedSample(currentSample);
-      } else if (moduType == 4) {  // AM
-        currentSample = carrOsc->getNextSample() * (1 + currentSample);
-      }
+      currentSample = modulate(carrOsc, currentSample, moduType);
       // Add some noise
       currentSample = (2 * random.nextFloat() - 1) * noiseLevel +
                       currentSample * (1.f - noiseLevel);
@@ -167,4 +171,11 @@ void SynthVoice::setHar(bool enabled) {
     harEnabled = false;
     for (int i = 0; i < cntHar; i++) delete harOsc[i];
   }
+}
+void SynthVoice::setLFO1(int type, int mt, float freq) {
+  delete LFO1;
+  LFO1 = selectOsc(type);
+  LFO1->setSampleRate(getSampleRate());
+  LFO1->setDefFreq(freq);
+  LFO1ModuType = mt;
 }
