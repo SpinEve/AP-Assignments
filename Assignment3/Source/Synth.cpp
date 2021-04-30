@@ -25,7 +25,7 @@ SynthVoice::SynthVoice() {
 SynthVoice::~SynthVoice() {
   delete carrOsc;
   delete midiOsc;
-  delete[] harOsc;
+  // delete[] harOsc;
 }
 void SynthVoice::startNote(int midiNoteNumber, float velocity,
                            juce::SynthesiserSound* sound,
@@ -48,6 +48,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
   if (playing) {
     for (auto i = startSample; i < (startSample + numSamples); i++) {
       currentSample = midiOsc->getNextSample();
+      // Harmonics Part
       if (harEnabled) {
         float harSample = 0.f;
         for (int i = 0; i < cntHar; i++)
@@ -120,6 +121,7 @@ Oscillator* selectOsc(int ot) {
 void SynthVoice::setMidiOscType(int ot) {
   // No change
   if (midiOscType == ot) return;
+  midiOscType = ot;
 
   delete midiOsc;
   midiOsc = selectOsc(midiOscType);
@@ -135,6 +137,7 @@ void SynthVoice::setMidiOscType(int ot) {
 }
 void SynthVoice::setCarrOscType(int ot) {
   if (carrOscType == ot) return;
+  carrOscType = ot;
 
   delete carrOsc;
   carrOsc = selectOsc(carrOscType);

@@ -57,10 +57,11 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
   void setNoiseLevel(float nl);
   void setCarrOscType(int ot);
   void setGain(float g);
+  void setADSR(float a, float d, float s, float r);
 
  private:
   //==============================================================================
-  float noiseLevel, gain;
+  float noiseLevel, gain, attack, delay, sustain, release;
   int countVoice, moduType, midiOscType, carrOscType;
   double sr;
   juce::Synthesiser synth;

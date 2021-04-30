@@ -9,7 +9,14 @@
 #include "PluginEditor.h"
 
 #include "PluginProcessor.h"
-
+void Assignment3AudioProcessorEditor::initSlider(juce::Slider& sld, float min,
+                                                 float max, float interVal,
+                                                 float defVal) {
+  addAndMakeVisible(sld);
+  sld.setRange(min, max, interVal);
+  sld.setValue(defVal);
+  sld.setDoubleClickReturnValue(true, defVal);
+}
 //==============================================================================
 Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
     Assignment3AudioProcessor& p)
@@ -45,23 +52,26 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
 
   // Sliders
   float defCarrFreq = 440.f;
-  addAndMakeVisible(carrFreqSlider);
-  carrFreqSlider.setRange(defCarrFreq, defCarrFreq * 4, 1.f);
-  carrFreqSlider.setValue(defCarrFreq);
-  carrFreqSlider.setDoubleClickReturnValue(true, defCarrFreq);
+  initSlider(carrFreqSlider, defCarrFreq, defCarrFreq * 4, 1.f, defCarrFreq);
   carrFreqSlider.onValueChange = [this] { freqSliderChanged(); };
 
-  addAndMakeVisible(noiseSlider);
-  noiseSlider.setRange(0.f, 1.f, 0.01f);
-  noiseSlider.setValue(0.f);
-  noiseSlider.setDoubleClickReturnValue(true, 0.f);
+  initSlider(noiseSlider, 0.f, 1.f, 0.01f, 0.f);
   noiseSlider.onValueChange = [this] { noiseSliderChanged(); };
 
-  addAndMakeVisible(gainSlider);
-  gainSlider.setRange(0.f, 1.f, 0.01f);
-  gainSlider.setValue(0.5f);
-  gainSlider.setDoubleClickReturnValue(true, 0.5f);
+  initSlider(gainSlider, 0.f, 1.f, 0.01f, 0.5f);
   gainSlider.onValueChange = [this] { gainSliderChanged(); };
+
+  initSlider(attackSlider, 0.f, 2.f, 0.01f, 0.1f);
+  attackSlider.onValueChange = [this] { ADSRChanged(); };
+
+  initSlider(delaySlider, 0.f, 2.f, 0.01f, 0.1f);
+  delaySlider.onValueChange = [this] { ADSRChanged(); };
+
+  initSlider(sustainSlider, 0.f, 2.f, 0.01f, 1.f);
+  sustainSlider.onValueChange = [this] { ADSRChanged(); };
+
+  initSlider(releaseSlider, 0.f, 2.f, 0.01f, 0.5f);
+  releaseSlider.onValueChange = [this] { ADSRChanged(); };
 
   // Boxes
   addAndMakeVisible(moduTypeBox);
@@ -103,7 +113,6 @@ void Assignment3AudioProcessorEditor::paint(juce::Graphics& g) {
   g.drawFittedText("Hello World!", getLocalBounds(),
                    juce::Justification::centred, 1);
 }
-
 void Assignment3AudioProcessorEditor::resized() {
   // This is generally where you'll want to lay out the positions of any
   // subcomponents in your editor..
@@ -123,6 +132,15 @@ void Assignment3AudioProcessorEditor::resized() {
                         getWidth() - leftIndent - 10, h);
   gainSlider.setBounds(leftIndent, 6 * vertIndent + 5 * h,
                        getWidth() - leftIndent - 10, h);
+
+  auto adsrWidth = getWidth() / 4 - 15;
+  attackSlider.setBounds(20, 7 * vertIndent + 6 * h, adsrWidth, h);
+  sustainSlider.setBounds(20 + adsrWidth + 10, 7 * vertIndent + 6 * h,
+                          adsrWidth, h);
+  delaySlider.setBounds(20 + 2 * (adsrWidth + 10), 7 * vertIndent + 6 * h,
+                        adsrWidth, h);
+  releaseSlider.setBounds(20 + 3 * (adsrWidth + 10), 7 * vertIndent + 6 * h,
+                          adsrWidth, h);
 }
 void Assignment3AudioProcessorEditor::setCarrFreq(float cf) {
   carrFreqSlider.setValue(cf);
@@ -144,4 +162,8 @@ void Assignment3AudioProcessorEditor::noiseSliderChanged() {
 }
 void Assignment3AudioProcessorEditor::gainSliderChanged() {
   audioProcessor.setGain(gainSlider.getValue());
+}
+void Assignment3AudioProcessorEditor::ADSRChanged() {
+  audioProcessor.setADSR(attackSlider.getValue(), delaySlider.getValue(),
+                         sustainSlider.getValue(), releaseSlider.getValue());
 }

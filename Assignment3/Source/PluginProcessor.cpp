@@ -203,6 +203,16 @@ void Assignment3AudioProcessor::setGain(float g) {
     sv->setGain(gain);
   }
 }
+void Assignment3AudioProcessor::setADSR(float a, float d, float s, float r) {
+  attack = a;
+  delay = d;
+  sustain = s;
+  release = r;
+  for (int i = 0; i < countVoice; i++) {
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->setADSR(attack, delay, sustain, release);
+  }
+}
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
