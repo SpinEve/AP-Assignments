@@ -31,6 +31,12 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
   carrFreq = parameters.getRawParameterValue("carrFreq");
   noiseLevel = parameters.getRawParameterValue("noiseLevel");
   gain = parameters.getRawParameterValue("gain");
+
+  attack = parameters.getRawParameterValue("attack");
+  decay = parameters.getRawParameterValue("decay");
+  sustain = parameters.getRawParameterValue("sustain");
+  release = parameters.getRawParameterValue("release");
+
   countVoice = 4;
   for (auto i = 0; i < countVoice; i++) {
     synth.addVoice(new SynthVoice(parameters));
@@ -157,10 +163,6 @@ void Assignment3AudioProcessor::setStateInformation(const void* data,
   if (xmlState.get() != nullptr)
     if (xmlState->hasTagName(parameters.state.getType()))
       parameters.replaceState(juce::ValueTree::fromXml(*xmlState));
-  for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->updateState();
-  }
 }
 
 void Assignment3AudioProcessor::setModuType(int mt) {
@@ -182,16 +184,6 @@ void Assignment3AudioProcessor::setCarrOscType(int ot) {
   for (int i = 0; i < countVoice; i++) {
     SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
     sv->setCarrOscType(carrOscType);
-  }
-}
-void Assignment3AudioProcessor::setADSR(float a, float d, float s, float r) {
-  attack = a;
-  delay = d;
-  sustain = s;
-  release = r;
-  for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->setADSR(attack, delay, sustain, release);
   }
 }
 void Assignment3AudioProcessor::setEncodeText(juce::String s) {
@@ -220,5 +212,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
       "noiseLevel", "Noise Level", 0.f, 1.f, 0.f));
   layout.add(std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.f,
                                                          1.f, 0.5f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("attack", "Attack",
+                                                         0.f, 4.f, 0.1f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("decay", "Decay", 0.f,
+                                                         4.f, 0.1f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("sustain", "Sustain",
+                                                         0.f, 4.f, 1.0f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("release", "Release",
+                                                         0.f, 4.f, 0.5f));
   return layout;
 }

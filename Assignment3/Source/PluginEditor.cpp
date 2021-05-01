@@ -87,17 +87,21 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   gainAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
       valueTreeState, "gain", gainSlider));
 
-  initSlider(attackSlider, 0.f, 2.f, 0.01f, 0.1f);
-  attackSlider.onValueChange = [this] { ADSRChanged(); };
+  initSlider(attackSlider, 0.f, 4.f, 0.01f, 0.1f);
+  attackAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+      valueTreeState, "attack", attackSlider));
 
-  initSlider(delaySlider, 0.f, 2.f, 0.01f, 0.1f);
-  delaySlider.onValueChange = [this] { ADSRChanged(); };
+  initSlider(decaySlider, 0.f, 4.f, 0.01f, 0.1f);
+  decayAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+      valueTreeState, "decay", decaySlider));
 
-  initSlider(sustainSlider, 0.f, 2.f, 0.01f, 1.f);
-  sustainSlider.onValueChange = [this] { ADSRChanged(); };
+  initSlider(sustainSlider, 0.f, 4.f, 0.01f, 1.f);
+  sustainAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+      valueTreeState, "sustain", sustainSlider));
 
-  initSlider(releaseSlider, 0.f, 2.f, 0.01f, 0.5f);
-  releaseSlider.onValueChange = [this] { ADSRChanged(); };
+  initSlider(releaseSlider, 0.f, 4.f, 0.01f, 0.5f);
+  releaseAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+      valueTreeState, "release", releaseSlider));
 
   initSlider(LFO1Slider, 0.1f, 10.f, 0.01f, 1.f);
   LFO1Slider.setSkewFactorFromMidPoint(1.f);
@@ -194,7 +198,7 @@ void Assignment3AudioProcessorEditor::resized() {
   attackSlider.setBounds(20, 8 * vertIndent + 7 * h, adsrWidth, h);
   sustainSlider.setBounds(20 + adsrWidth + 10, 8 * vertIndent + 7 * h,
                           adsrWidth, h);
-  delaySlider.setBounds(20 + 2 * (adsrWidth + 10), 8 * vertIndent + 7 * h,
+  decaySlider.setBounds(20 + 2 * (adsrWidth + 10), 8 * vertIndent + 7 * h,
                         adsrWidth, h);
   releaseSlider.setBounds(20 + 3 * (adsrWidth + 10), 8 * vertIndent + 7 * h,
                           adsrWidth, h);
@@ -219,10 +223,6 @@ void Assignment3AudioProcessorEditor::midiOscTypeBoxChanged() {
 }
 void Assignment3AudioProcessorEditor::carrOscTypeBoxChanged() {
   audioProcessor.setCarrOscType(carrOscTypeBox.getSelectedId());
-}
-void Assignment3AudioProcessorEditor::ADSRChanged() {
-  audioProcessor.setADSR(attackSlider.getValue(), delaySlider.getValue(),
-                         sustainSlider.getValue(), releaseSlider.getValue());
 }
 void Assignment3AudioProcessorEditor::encodeButtonClicked() {
   auto state = encodeButton.getToggleState();

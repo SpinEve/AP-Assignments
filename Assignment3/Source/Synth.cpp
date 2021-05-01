@@ -7,8 +7,20 @@ SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
   auto sr = getSampleRate();
 
   carrFreq = valueTreeState.getRawParameterValue("carrFreq");
+  valueTreeState.addParameterListener("carrFreq", this);
+
   noiseLevel = valueTreeState.getRawParameterValue("noiseLevel");
   gain = valueTreeState.getRawParameterValue("gain");
+
+  attack = valueTreeState.getRawParameterValue("attack");
+  decay = valueTreeState.getRawParameterValue("decay");
+  sustain = valueTreeState.getRawParameterValue("sustain");
+  release = valueTreeState.getRawParameterValue("release");
+
+  valueTreeState.addParameterListener("attack", this);
+  valueTreeState.addParameterListener("decay", this);
+  valueTreeState.addParameterListener("sustain", this);
+  valueTreeState.addParameterListener("release", this);
 
   playing = false;
   isOff = false;
@@ -29,7 +41,6 @@ SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
   LFO1Amp = 0.f;
 
   env.setSampleRate(sr);
-  setADSR(0.1f, 0.1f, 1.0f, 0.5f);
 }
 SynthVoice::~SynthVoice() {
   delete carrOsc;
@@ -107,13 +118,23 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
 bool SynthVoice::canPlaySound(juce::SynthesiserSound* sound) {
   return dynamic_cast<SynthSound*>(sound) != nullptr;
 }
-void SynthVoice::updateState() { carrOsc->setDefFreq(*carrFreq); }
-void SynthVoice::setADSR(float a, float d, float s, float r) {
-  envPara.attack = a;
-  envPara.decay = d;
-  envPara.sustain = s;
-  envPara.release = r;
-  env.setParameters(envPara);
+void SynthVoice::parameterChanged(const juce::String& parameterID,
+                                  float newValue) {
+  if (parameterID == "carrFreq") {
+    carrOsc->setDefFreq(newValue);
+  } else if (parameterID == "attack") {
+    envPara.attack = newValue;
+    env.setParameters(envPara);
+  } else if (parameterID == "decay") {
+    envPara.decay = newValue;
+    env.setParameters(envPara);
+  } else if (parameterID == "sustain") {
+    envPara.sustain = newValue;
+    env.setParameters(envPara);
+  } else if (parameterID == "release") {
+    envPara.release = newValue;
+    env.setParameters(envPara);
+  }
 }
 void SynthVoice::setModuType(int mt) {
   moduType = mt;
