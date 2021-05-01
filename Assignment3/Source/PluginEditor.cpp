@@ -20,8 +20,8 @@ void Assignment3AudioProcessorEditor::initSlider(juce::Slider& sld, float min,
 }
 //==============================================================================
 Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
-    Assignment3AudioProcessor& p)
-    : AudioProcessorEditor(&p), audioProcessor(p) {
+    Assignment3AudioProcessor& p, juce::AudioProcessorValueTreeState& vts)
+    : AudioProcessorEditor(&p), audioProcessor(p), valueTreeState(vts) {
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
   setSize(800, 600);
@@ -75,13 +75,17 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   initSlider(carrFreqSlider, defCarrFreq / 8, defCarrFreq * 8, 1.f,
              defCarrFreq);
   carrFreqSlider.setSkewFactorFromMidPoint(defCarrFreq);
-  carrFreqSlider.onValueChange = [this] { freqSliderChanged(); };
+  carrFreqAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+      valueTreeState, "carrFreq", carrFreqSlider));
 
   initSlider(noiseSlider, 0.f, 1.f, 0.01f, 0.f);
-  noiseSlider.onValueChange = [this] { noiseSliderChanged(); };
+  noiseLevelAttach.reset(
+      new juce::AudioProcessorValueTreeState::SliderAttachment(
+          valueTreeState, "noiseLevel", noiseSlider));
 
   initSlider(gainSlider, 0.f, 1.f, 0.01f, 0.5f);
-  gainSlider.onValueChange = [this] { gainSliderChanged(); };
+  gainAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+      valueTreeState, "gain", gainSlider));
 
   initSlider(attackSlider, 0.f, 2.f, 0.01f, 0.1f);
   attackSlider.onValueChange = [this] { ADSRChanged(); };
@@ -207,26 +211,14 @@ void Assignment3AudioProcessorEditor::resized() {
   encodeText.setBounds(20, 14 * vertIndent + 13 * h,
                        getWidth() - leftIndent - 10, h);
 }
-void Assignment3AudioProcessorEditor::setCarrFreq(float cf) {
-  carrFreqSlider.setValue(cf);
-}
 void Assignment3AudioProcessorEditor::moduTypeBoxChanged() {
   audioProcessor.setModuType(moduTypeBox.getSelectedId());
-}
-void Assignment3AudioProcessorEditor::freqSliderChanged() {
-  audioProcessor.setCarrFreq(carrFreqSlider.getValue());
 }
 void Assignment3AudioProcessorEditor::midiOscTypeBoxChanged() {
   audioProcessor.setMidiOscType(midiOscTypeBox.getSelectedId());
 }
 void Assignment3AudioProcessorEditor::carrOscTypeBoxChanged() {
   audioProcessor.setCarrOscType(carrOscTypeBox.getSelectedId());
-}
-void Assignment3AudioProcessorEditor::noiseSliderChanged() {
-  audioProcessor.setNoiseLevel(noiseSlider.getValue());
-}
-void Assignment3AudioProcessorEditor::gainSliderChanged() {
-  audioProcessor.setGain(gainSlider.getValue());
 }
 void Assignment3AudioProcessorEditor::ADSRChanged() {
   audioProcessor.setADSR(attackSlider.getValue(), delaySlider.getValue(),

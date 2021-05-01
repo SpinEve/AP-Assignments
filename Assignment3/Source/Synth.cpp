@@ -3,26 +3,24 @@
 #include <JuceHeader.h>
 
 SynthVoice::SynthVoice() {
-  gain = 0.5f;
-  carrFreq = 440.f;
-  noiseLevel = 0.f;
+  auto sr = getSampleRate();
+
   playing = false;
   isOff = false;
   harEnabled = false;
   cntHar = 8;
-
-  auto sr = getSampleRate();
+  moduType = 1;
+  
   carrOsc = new SinOsc();
   carrOsc->setSampleRate(sr);
-  carrOsc->setDefFreq(carrFreq);
-
-  midiOscType = 1;
+  
   midiOsc = new SinOsc();
   midiOsc->setSampleRate(sr);
+  midiOscType = 1;
 
   LFO1 = new SinOsc();
-  LFO1ModuType = 1;  // No modulation
-  moduType = 1;
+  LFO1->setSampleRate(sr);
+  LFO1ModuType = 1;
   LFO1Amp = 0.f;
 
   env.setSampleRate(sr);
@@ -82,12 +80,12 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
       if (moduType > 1)
         currentSample = modulate(carrOsc, currentSample, moduType);
       // Add some noise
-      currentSample = (2 * random.nextFloat() - 1) * noiseLevel +
-                      currentSample * (1.f - noiseLevel);
+      currentSample = (2 * random.nextFloat() - 1) * (*noiseLevel) +
+                      currentSample * (1.f - (*noiseLevel));
       // Envelope
       currentSample *= env.getNextSample();
       // Gain, halved so not too loud
-      currentSample *= gain / 2;
+      currentSample *= (*gain) / 2;
       // Render
       for (auto ch = 0; ch < outputBuffer.getNumChannels(); ch++) {
         outputBuffer.addSample(ch, i, currentSample);
@@ -104,10 +102,10 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
 bool SynthVoice::canPlaySound(juce::SynthesiserSound* sound) {
   return dynamic_cast<SynthSound*>(sound) != nullptr;
 }
-void SynthVoice::setCarrFreq(float cf) {
-  carrFreq = cf;
-  carrOsc->setDefFreq(carrFreq);
-}
+void SynthVoice::initNoiseLevel(std::atomic<float>* nl) { noiseLevel = nl; }
+void SynthVoice::initCarrFreq(std::atomic<float>* cf) { carrFreq = cf; }
+void SynthVoice::initGain(std::atomic<float>* g) { gain = g; }
+void SynthVoice::updateState() { carrOsc->setDefFreq(*carrFreq); }
 void SynthVoice::setADSR(float a, float d, float s, float r) {
   envPara.attack = a;
   envPara.decay = d;
@@ -158,8 +156,8 @@ void SynthVoice::setCarrOscType(int ot) {
   carrOsc = selectOsc(carrOscType);
   carrOsc->setSampleRate(getSampleRate());
 }
-void SynthVoice::setNoiseLevel(float nl) { noiseLevel = nl; }
-void SynthVoice::setGain(float g) { gain = g; };
+// void SynthVoice::setNoiseLevel(float nl) { noiseLevel = nl; }
+// void SynthVoice::setGain(float g) { gain = g; };
 void SynthVoice::setHar(bool enabled) {
   // No change
   if (enabled == harEnabled) return;

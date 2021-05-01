@@ -52,21 +52,21 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
   void getStateInformation(juce::MemoryBlock& destData) override;
   void setStateInformation(const void* data, int sizeInBytes) override;
   void setModuType(int mt);
-  void setCarrFreq(float cf);
   void setMidiOscType(int ot);
-  void setNoiseLevel(float nl);
   void setCarrOscType(int ot);
-  void setGain(float g);
   void setADSR(float a, float d, float s, float r);
   void setLFO1(int type, int mt, float freq, float amp);
   void setEncodeText(juce::String s);
 
  private:
   //==============================================================================
-  float noiseLevel, gain, attack, delay, sustain, release;
+  float attack, delay, sustain, release;
   int countVoice, moduType, midiOscType, carrOscType;
   double sr;
   juce::Synthesiser synth;
-  juce::AudioParameterFloat* carrFreq;
+  std::atomic<float>* carrFreq = nullptr;
+  std::atomic<float>* noiseLevel = nullptr;
+  std::atomic<float>* gain = nullptr;
+  juce::AudioProcessorValueTreeState parameters;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessor)
 };

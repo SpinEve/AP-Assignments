@@ -21,20 +21,28 @@ class SynthVoice : public juce::SynthesiserVoice {
   void pitchWheelMoved(int) override {}
   void controllerMoved(int, int) override {}
   bool canPlaySound(juce::SynthesiserSound* sound) override;
-  void setCarrFreq(float cf);
+  // void setCarrFreq(float cf);
   void setADSR(float a, float d, float s, float r);
   void setModuType(int mt);
   void setMidiOscType(int ot);
-  void setNoiseLevel(float nl);
+  // void setNoiseLevel(float nl);
   void setCarrOscType(int ot);
-  void setGain(float g);
+  // void setGain(float g);
   void setHar(bool enabled);
   void setLFO1(int type, int moduType, float freq, float amp);
+  void initNoiseLevel(std::atomic<float>* nl);
+  void initCarrFreq(std::atomic<float>* cf);
+  void initGain(std::atomic<float>* g);
+
+  void updateState();
   ~SynthVoice();
 
  private:
   bool playing, isOff, harEnabled;
-  float currentSample, gain, carrFreq, noiseLevel;
+  float currentSample;
+  std::atomic<float>* gain = nullptr;
+  std::atomic<float>* carrFreq = nullptr;
+  std::atomic<float>* noiseLevel = nullptr;
   int moduType, carrOscType, midiOscType, cntHar;
   Oscillator *carrOsc, *midiOsc, *LFO1;
   Oscillator* harOsc[8];
@@ -45,5 +53,4 @@ class SynthVoice : public juce::SynthesiserVoice {
   juce::Random random;
   juce::ADSR env;
   juce::ADSR::Parameters envPara;
-  // juce::IIRFilter()
 };

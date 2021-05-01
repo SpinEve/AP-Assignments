@@ -11,6 +11,7 @@
 #include "PluginEditor.h"
 #include "Synth.h"
 
+juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 //==============================================================================
 Assignment3AudioProcessor::Assignment3AudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -22,16 +23,25 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
 #endif
               .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-      )
+              )
 #endif
-{
+      ,
+      parameters(*this, nullptr, juce::Identifier("Assignment 3"),
+                 createParameterLayout()) {
+  carrFreq = parameters.getRawParameterValue("carrFreq");
+  noiseLevel = parameters.getRawParameterValue("noiseLevel");
+  gain = parameters.getRawParameterValue("gain");
   countVoice = 4;
   for (auto i = 0; i < countVoice; i++) {
     synth.addVoice(new SynthVoice());
   }
   synth.addSound(new SynthSound());
-  addParameter(carrFreq = new juce::AudioParameterFloat(
-                   "carrFreq", "Carrier Frequency", 440.f, 1760.f, 440.f));
+  for (int i = 0; i < countVoice; i++) {
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->initNoiseLevel(noiseLevel);
+    sv->initGain(gain);
+    sv->initCarrFreq(carrFreq);
+  }
 }
 
 Assignment3AudioProcessor::~Assignment3AudioProcessor() {}
@@ -134,31 +144,29 @@ bool Assignment3AudioProcessor::hasEditor() const {
 }
 
 juce::AudioProcessorEditor* Assignment3AudioProcessor::createEditor() {
-  return new Assignment3AudioProcessorEditor(*this);
+  return new Assignment3AudioProcessorEditor(*this, parameters);
 }
 
 //==============================================================================
 void Assignment3AudioProcessor::getStateInformation(
     juce::MemoryBlock& destData) {
-  // You should use this method to store your parameters in the memory block.
-  // You could do that either as raw data, or use the XML or ValueTree classes
-  // as intermediaries to make it easy to save and load complex data.
-  juce::MemoryOutputStream(destData, true).writeFloat(*carrFreq);
+  auto state = parameters.copyState();
+  std::unique_ptr<juce::XmlElement> xml(state.createXml());
+  copyXmlToBinary(*xml, destData);
 }
 
 void Assignment3AudioProcessor::setStateInformation(const void* data,
                                                     int sizeInBytes) {
-  *carrFreq =
-      juce::MemoryInputStream(data, static_cast<size_t>(sizeInBytes), false)
-          .readFloat();
-  Assignment3AudioProcessorEditor* ape =
-      dynamic_cast<Assignment3AudioProcessorEditor*>(getActiveEditor());
-  if (ape != nullptr) {
-    ape->setCarrFreq(*carrFreq);
+  std::unique_ptr<juce::XmlElement> xmlState(
+      getXmlFromBinary(data, sizeInBytes));
+
+  if (xmlState.get() != nullptr)
+    if (xmlState->hasTagName(parameters.state.getType()))
+      parameters.replaceState(juce::ValueTree::fromXml(*xmlState));
+  for (int i = 0; i < countVoice; i++) {
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->updateState();
   }
-  // You should use this method to restore your parameters from this memory
-  // block, whose contents will have been created by the getStateInformation()
-  // call.
 }
 
 void Assignment3AudioProcessor::setModuType(int mt) {
@@ -166,13 +174,6 @@ void Assignment3AudioProcessor::setModuType(int mt) {
   for (int i = 0; i < countVoice; i++) {
     SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
     sv->setModuType(moduType);
-  }
-}
-void Assignment3AudioProcessor::setCarrFreq(float cf) {
-  (*carrFreq) = cf;
-  for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->setCarrFreq((*carrFreq));
   }
 }
 void Assignment3AudioProcessor::setMidiOscType(int ot) {
@@ -187,20 +188,6 @@ void Assignment3AudioProcessor::setCarrOscType(int ot) {
   for (int i = 0; i < countVoice; i++) {
     SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
     sv->setCarrOscType(carrOscType);
-  }
-}
-void Assignment3AudioProcessor::setNoiseLevel(float nl) {
-  noiseLevel = nl;
-  for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->setNoiseLevel(noiseLevel);
-  }
-}
-void Assignment3AudioProcessor::setGain(float g) {
-  gain = g;
-  for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->setGain(gain);
   }
 }
 void Assignment3AudioProcessor::setADSR(float a, float d, float s, float r) {
@@ -219,7 +206,8 @@ void Assignment3AudioProcessor::setEncodeText(juce::String s) {
     // sv->setEncodeText(s);
   }
 }
-void Assignment3AudioProcessor::setLFO1(int type, int mt, float freq, float amp) {
+void Assignment3AudioProcessor::setLFO1(int type, int mt, float freq,
+                                        float amp) {
   for (int i = 0; i < countVoice; i++) {
     SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
     sv->setLFO1(type, mt, freq, amp);
@@ -229,4 +217,14 @@ void Assignment3AudioProcessor::setLFO1(int type, int mt, float freq, float amp)
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
   return new Assignment3AudioProcessor();
+}
+juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
+  juce::AudioProcessorValueTreeState::ParameterLayout layout;
+  layout.add(std::make_unique<juce::AudioParameterFloat>(
+      "carrFreq", "Carrier Frequency", 440.f / 8, 440.f * 8, 440.f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>(
+      "noiseLevel", "Noise Level", 0.f, 1.f, 0.f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.f,
+                                                         1.f, 0.5f));
+  return layout;
 }

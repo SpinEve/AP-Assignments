@@ -17,19 +17,16 @@
  */
 class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
  public:
-  Assignment3AudioProcessorEditor(Assignment3AudioProcessor&);
+  Assignment3AudioProcessorEditor(Assignment3AudioProcessor&,
+                                  juce::AudioProcessorValueTreeState&);
   ~Assignment3AudioProcessorEditor() override;
 
   //==============================================================================
   void paint(juce::Graphics&) override;
   void resized() override;
-  void setCarrFreq(float _carrFreq);
-  void freqSliderChanged();
   void moduTypeBoxChanged();
   void midiOscTypeBoxChanged();
   void carrOscTypeBoxChanged();
-  void noiseSliderChanged();
-  void gainSliderChanged();
   void ADSRChanged();
   void initSlider(juce::Slider& sld, float min, float max, float interVal,
                   float defVal);
@@ -51,5 +48,8 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
       LFO1ModuTypeBox;
   juce::TextEditor encodeText;
   juce::ToggleButton encodeButton;
+  juce::AudioProcessorValueTreeState& valueTreeState;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+      gainAttach, noiseLevelAttach, carrFreqAttach;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)
 };
