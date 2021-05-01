@@ -9,7 +9,6 @@ AS3 TODO:
 - [x] Harmonic series
 - [x] Noise generator and percentage
 - [x] LFO1
-- [ ] Layout enchancement
+- [x] Layout enchancement
 - [ ] String "encoding" using harmonic
-- [ ] Preset saving
-- [ ] Filters
+- [x] Preset saving
