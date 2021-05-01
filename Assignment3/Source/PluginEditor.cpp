@@ -54,6 +54,22 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   addAndMakeVisible(ADSRLabel);
   ADSRLabel.setText("ADSR Adjustment", juce::dontSendNotification);
 
+  addAndMakeVisible(LFO1TypeLabel);
+  LFO1TypeLabel.setText("LFO1 Type", juce::dontSendNotification);
+  LFO1TypeLabel.attachToComponent(&LFO1TypeBox, true);
+
+  addAndMakeVisible(LFO1ModuLabel);
+  LFO1ModuLabel.setText("LFO1 Modulation", juce::dontSendNotification);
+  LFO1ModuLabel.attachToComponent(&LFO1ModuTypeBox, true);
+
+  addAndMakeVisible(LFO1SliderLabel);
+  LFO1SliderLabel.setText("LFO1 Frequency", juce::dontSendNotification);
+  LFO1SliderLabel.attachToComponent(&LFO1Slider, true);
+
+  addAndMakeVisible(LFO1AmpSlider);
+  LFO1AmpSliderLabel.setText("LFO1 Amp", juce::dontSendNotification);
+  LFO1AmpSliderLabel.attachToComponent(&LFO1AmpSlider, true);
+
   // Sliders
   float defCarrFreq = 440.f;
   initSlider(carrFreqSlider, defCarrFreq / 8, defCarrFreq * 8, 1.f,
@@ -79,8 +95,12 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   initSlider(releaseSlider, 0.f, 2.f, 0.01f, 0.5f);
   releaseSlider.onValueChange = [this] { ADSRChanged(); };
 
-  initSlider(LFO1Slider, 0.f, 1.f, 0.01f, 0.1f);
+  initSlider(LFO1Slider, 0.1f, 10.f, 0.01f, 1.f);
+  LFO1Slider.setSkewFactorFromMidPoint(1.f);
   LFO1Slider.onValueChange = [this] { setLFO1(); };
+
+  initSlider(LFO1AmpSlider, 0.f, 1.f, 0.01f, 0.5f);
+  LFO1AmpSlider.onValueChange = [this] { setLFO1(); };
 
   // initSlider(osc2Slider, 0.f, 1.f, 0.01f, 0.1f);
   // osc2Slider.onValueChange = [this] { osc2SliderChanged(); };
@@ -174,9 +194,17 @@ void Assignment3AudioProcessorEditor::resized() {
                         adsrWidth, h);
   releaseSlider.setBounds(20 + 3 * (adsrWidth + 10), 8 * vertIndent + 7 * h,
                           adsrWidth, h);
-  encodeButton.setBounds(20, 9 * vertIndent + 8 * h,
+  LFO1TypeBox.setBounds(leftIndent, 9 * vertIndent + 8 * h,
+                        getWidth() - leftIndent - 10, h);
+  LFO1ModuTypeBox.setBounds(leftIndent, 10 * vertIndent + 9 * h,
+                            getWidth() - leftIndent - 10, h);
+  LFO1Slider.setBounds(leftIndent, 11 * vertIndent + 10 * h,
+                       getWidth() - leftIndent - 10, h);
+  LFO1AmpSlider.setBounds(leftIndent, 12 * vertIndent + 11 * h,
+                          getWidth() - leftIndent - 10, h);
+  encodeButton.setBounds(20, 13 * vertIndent + 12 * h,
                          getWidth() - leftIndent - 10, h);
-  encodeText.setBounds(20, 10 * vertIndent + 9 * h,
+  encodeText.setBounds(20, 14 * vertIndent + 13 * h,
                        getWidth() - leftIndent - 10, h);
 }
 void Assignment3AudioProcessorEditor::setCarrFreq(float cf) {
@@ -221,6 +249,6 @@ void Assignment3AudioProcessorEditor::encodeTextChanged() {
 }
 void Assignment3AudioProcessorEditor::setLFO1() {
   audioProcessor.setLFO1(LFO1TypeBox.getSelectedId(),
-                         LFO1ModuTypeBox.getSelectedId(),
-                         LFO1Slider.getValue());
+                         LFO1ModuTypeBox.getSelectedId(), LFO1Slider.getValue(),
+                         LFO1AmpSlider.getValue());
 }

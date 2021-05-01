@@ -6,8 +6,9 @@ AS3 TODO:
 
 - [x] Oscillator customization
 - [x] ADSR customization
-- [ ] Harmonic series
+- [x] Harmonic series
 - [x] Noise generator and percentage
+- [x] LFO1
 - [ ] Layout enchancement
 - [ ] String "encoding" using harmonic
 - [ ] Preset saving

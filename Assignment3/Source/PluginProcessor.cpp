@@ -219,10 +219,10 @@ void Assignment3AudioProcessor::setEncodeText(juce::String s) {
     // sv->setEncodeText(s);
   }
 }
-void Assignment3AudioProcessor::setLFO1(int type, int mt, float freq) {
+void Assignment3AudioProcessor::setLFO1(int type, int mt, float freq, float amp) {
   for (int i = 0; i < countVoice; i++) {
     SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->setLFO1(type, mt, freq);
+    sv->setLFO1(type, mt, freq, amp);
   }
 }
 //==============================================================================

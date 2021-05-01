@@ -29,7 +29,7 @@ class SynthVoice : public juce::SynthesiserVoice {
   void setCarrOscType(int ot);
   void setGain(float g);
   void setHar(bool enabled);
-  void setLFO1(int type, int moduType, float freq);
+  void setLFO1(int type, int moduType, float freq, float amp);
   ~SynthVoice();
 
  private:
@@ -40,6 +40,7 @@ class SynthVoice : public juce::SynthesiserVoice {
   Oscillator* harOsc[8];
 
   int LFO1ModuType;
+  float LFO1Amp;
   float harAmp[8];
   juce::Random random;
   juce::ADSR env;

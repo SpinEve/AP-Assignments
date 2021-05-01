@@ -42,10 +42,11 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   // access the processor object that created it.
   Assignment3AudioProcessor& audioProcessor;
   juce::Label freqLabel, moduLabel, midiLabel, noiseLabel, carrLabel, gainLabel,
-      ADSRLabel;
+      ADSRLabel, LFO1TypeLabel, LFO1ModuLabel, LFO1SliderLabel,
+      LFO1AmpSliderLabel;
   juce::Slider carrFreqSlider, noiseSlider, gainSlider;
   juce::Slider attackSlider, delaySlider, sustainSlider, releaseSlider,
-      LFO1Slider;
+      LFO1Slider, LFO1AmpSlider;
   juce::ComboBox moduTypeBox, midiOscTypeBox, carrOscTypeBox, LFO1TypeBox,
       LFO1ModuTypeBox;
   juce::TextEditor encodeText;

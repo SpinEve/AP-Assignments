@@ -16,11 +16,14 @@ SynthVoice::SynthVoice() {
   carrOsc->setSampleRate(sr);
   carrOsc->setDefFreq(carrFreq);
 
+  midiOscType = 1;
   midiOsc = new SinOsc();
   midiOsc->setSampleRate(sr);
 
+  LFO1 = new SinOsc();
   LFO1ModuType = 1;  // No modulation
   moduType = 1;
+  LFO1Amp = 0.f;
 
   env.setSampleRate(sr);
   setADSR(0.1f, 0.1f, 1.0f, 0.5f);
@@ -34,10 +37,10 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity,
                            juce::SynthesiserSound* sound,
                            int currentPitchWheelPosition) {
   auto freq = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
-  midiOsc->setFreq(freq);
+  midiOsc->setDefFreq(freq);
   if (harEnabled) {
     for (int i = 0; i < cntHar; i++) {
-      harOsc[i]->setFreq(freq * (i + 2));
+      harOsc[i]->setDefFreq(freq * (i + 2));
       harAmp[i] = 1.f / (i + 1);
     }
   }
@@ -67,8 +70,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
                                  int startSample, int numSamples) {
   if (playing) {
     for (auto i = startSample; i < (startSample + numSamples); i++) {
-      float LFOSample = 0;
-      if (LFO1 != nullptr) LFOSample = LFO1->getNextSample();
+      float LFOSample = LFO1->getNextSample() * LFO1Amp;
       currentSample = modulate(midiOsc, LFOSample, LFO1ModuType);
       if (harEnabled) {
         float harSample = 0.f;
@@ -77,7 +79,8 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
         currentSample += harSample;
       }
       // Modulation Part
-      currentSample = modulate(carrOsc, currentSample, moduType);
+      if (moduType > 1)
+        currentSample = modulate(carrOsc, currentSample, moduType);
       // Add some noise
       currentSample = (2 * random.nextFloat() - 1) * noiseLevel +
                       currentSample * (1.f - noiseLevel);
@@ -172,10 +175,11 @@ void SynthVoice::setHar(bool enabled) {
     for (int i = 0; i < cntHar; i++) delete harOsc[i];
   }
 }
-void SynthVoice::setLFO1(int type, int mt, float freq) {
+void SynthVoice::setLFO1(int type, int mt, float freq, float amp) {
   delete LFO1;
   LFO1 = selectOsc(type);
   LFO1->setSampleRate(getSampleRate());
   LFO1->setDefFreq(freq);
   LFO1ModuType = mt;
+  LFO1Amp = amp;
 }
