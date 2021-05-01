@@ -33,15 +33,9 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
   gain = parameters.getRawParameterValue("gain");
   countVoice = 4;
   for (auto i = 0; i < countVoice; i++) {
-    synth.addVoice(new SynthVoice());
+    synth.addVoice(new SynthVoice(parameters));
   }
   synth.addSound(new SynthSound());
-  for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->initNoiseLevel(noiseLevel);
-    sv->initGain(gain);
-    sv->initCarrFreq(carrFreq);
-  }
 }
 
 Assignment3AudioProcessor::~Assignment3AudioProcessor() {}

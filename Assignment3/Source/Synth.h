@@ -11,7 +11,7 @@ class SynthSound : public juce::SynthesiserSound {
 
 class SynthVoice : public juce::SynthesiserVoice {
  public:
-  SynthVoice();
+  SynthVoice(juce::AudioProcessorValueTreeState&);
   void startNote(int midiNoteNumber, float velocity,
                  juce::SynthesiserSound* sound,
                  int currentPitchWheelPosition) override;
@@ -21,13 +21,10 @@ class SynthVoice : public juce::SynthesiserVoice {
   void pitchWheelMoved(int) override {}
   void controllerMoved(int, int) override {}
   bool canPlaySound(juce::SynthesiserSound* sound) override;
-  // void setCarrFreq(float cf);
   void setADSR(float a, float d, float s, float r);
   void setModuType(int mt);
   void setMidiOscType(int ot);
-  // void setNoiseLevel(float nl);
   void setCarrOscType(int ot);
-  // void setGain(float g);
   void setHar(bool enabled);
   void setLFO1(int type, int moduType, float freq, float amp);
   void initNoiseLevel(std::atomic<float>* nl);
@@ -53,4 +50,5 @@ class SynthVoice : public juce::SynthesiserVoice {
   juce::Random random;
   juce::ADSR env;
   juce::ADSR::Parameters envPara;
+  juce::AudioProcessorValueTreeState& valueTreeState;
 };

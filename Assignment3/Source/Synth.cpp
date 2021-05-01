@@ -2,18 +2,23 @@
 
 #include <JuceHeader.h>
 
-SynthVoice::SynthVoice() {
+SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
+    : valueTreeState(vts) {
   auto sr = getSampleRate();
+
+  carrFreq = valueTreeState.getRawParameterValue("carrFreq");
+  noiseLevel = valueTreeState.getRawParameterValue("noiseLevel");
+  gain = valueTreeState.getRawParameterValue("gain");
 
   playing = false;
   isOff = false;
   harEnabled = false;
   cntHar = 8;
   moduType = 1;
-  
+
   carrOsc = new SinOsc();
   carrOsc->setSampleRate(sr);
-  
+
   midiOsc = new SinOsc();
   midiOsc->setSampleRate(sr);
   midiOscType = 1;
@@ -102,9 +107,6 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
 bool SynthVoice::canPlaySound(juce::SynthesiserSound* sound) {
   return dynamic_cast<SynthSound*>(sound) != nullptr;
 }
-void SynthVoice::initNoiseLevel(std::atomic<float>* nl) { noiseLevel = nl; }
-void SynthVoice::initCarrFreq(std::atomic<float>* cf) { carrFreq = cf; }
-void SynthVoice::initGain(std::atomic<float>* g) { gain = g; }
 void SynthVoice::updateState() { carrOsc->setDefFreq(*carrFreq); }
 void SynthVoice::setADSR(float a, float d, float s, float r) {
   envPara.attack = a;
@@ -156,8 +158,6 @@ void SynthVoice::setCarrOscType(int ot) {
   carrOsc = selectOsc(carrOscType);
   carrOsc->setSampleRate(getSampleRate());
 }
-// void SynthVoice::setNoiseLevel(float nl) { noiseLevel = nl; }
-// void SynthVoice::setGain(float g) { gain = g; };
 void SynthVoice::setHar(bool enabled) {
   // No change
   if (enabled == harEnabled) return;
