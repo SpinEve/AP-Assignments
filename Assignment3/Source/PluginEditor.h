@@ -24,10 +24,6 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   //==============================================================================
   void paint(juce::Graphics&) override;
   void resized() override;
-  void moduTypeBoxChanged();
-  void midiOscTypeBoxChanged();
-  void carrOscTypeBoxChanged();
-  void ADSRChanged();
   void initSlider(juce::Slider& sld, float min, float max, float interVal,
                   float defVal);
   void encodeButtonClicked();
@@ -39,9 +35,8 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   juce::Label freqLabel, moduLabel, midiLabel, noiseLabel, carrLabel, gainLabel,
       ADSRLabel, LFO1TypeLabel, LFO1ModuLabel, LFO1SliderLabel,
       LFO1AmpSliderLabel;
-  juce::Slider carrFreqSlider, noiseSlider, gainSlider;
-  juce::Slider attackSlider, decaySlider, sustainSlider, releaseSlider,
-      LFO1Slider, LFO1AmpSlider;
+  juce::Slider carrFreqSlider, noiseSlider, gainSlider, attackSlider,
+      decaySlider, sustainSlider, releaseSlider, LFO1Slider, LFO1AmpSlider;
   juce::ComboBox moduTypeBox, midiOscTypeBox, carrOscTypeBox, LFO1TypeBox,
       LFO1ModuTypeBox;
   juce::TextEditor encodeText;
@@ -50,5 +45,7 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
       gainAttach, noiseLevelAttach, carrFreqAttach, attackAttach, decayAttach,
       sustainAttach, releaseAttach;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>
+      moduTypeBoxAttach, midiOscTypeBoxAttach, carrOscTypeBoxAttach;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)
 };

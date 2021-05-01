@@ -25,9 +25,6 @@ class SynthVoice : public juce::SynthesiserVoice,
   void parameterChanged(const juce::String& parameterID,
                         float newValue) override;
 
-  void setModuType(int mt);
-  void setMidiOscType(int ot);
-  void setCarrOscType(int ot);
   void setHar(bool enabled);
   void setLFO1(int type, int moduType, float freq, float amp);
 
@@ -43,8 +40,11 @@ class SynthVoice : public juce::SynthesiserVoice,
   std::atomic<float>* decay = nullptr;
   std::atomic<float>* sustain = nullptr;
   std::atomic<float>* release = nullptr;
+  std::atomic<float>* moduType = nullptr;
+  std::atomic<float>* midiOscType = nullptr;
+  std::atomic<float>* carrOscType = nullptr;
 
-  int moduType, carrOscType, midiOscType, cntHar;
+  int cntHar;
   Oscillator *carrOsc, *midiOsc, *LFO1;
   Oscillator* harOsc[8];
 

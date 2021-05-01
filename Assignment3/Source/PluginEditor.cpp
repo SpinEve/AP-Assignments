@@ -74,7 +74,6 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   float defCarrFreq = 440.f;
   initSlider(carrFreqSlider, defCarrFreq / 8, defCarrFreq * 8, 1.f,
              defCarrFreq);
-  carrFreqSlider.setSkewFactorFromMidPoint(defCarrFreq);
   carrFreqAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
       valueTreeState, "carrFreq", carrFreqSlider));
 
@@ -119,7 +118,9 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   moduTypeBox.addItem("FM", 2);
   moduTypeBox.addItem("PM", 3);
   moduTypeBox.addItem("AM", 4);
-  moduTypeBox.onChange = [this] { moduTypeBoxChanged(); };
+  moduTypeBoxAttach.reset(
+      new juce::AudioProcessorValueTreeState::ComboBoxAttachment(
+          valueTreeState, "moduType", moduTypeBox));
 
   addAndMakeVisible(midiOscTypeBox);
   midiOscTypeBox.addItem("Sin", 1);
@@ -128,7 +129,9 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   midiOscTypeBox.addItem("Square", 4);
   midiOscTypeBox.addItem("Sawtooth", 5);
   midiOscTypeBox.addItem("Noise", 6);
-  midiOscTypeBox.onChange = [this] { midiOscTypeBoxChanged(); };
+  midiOscTypeBoxAttach.reset(
+      new juce::AudioProcessorValueTreeState::ComboBoxAttachment(
+          valueTreeState, "midiOscType", midiOscTypeBox));
 
   addAndMakeVisible(carrOscTypeBox);
   carrOscTypeBox.addItem("Sin", 1);
@@ -136,7 +139,10 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   carrOscTypeBox.addItem("Tri", 3);
   carrOscTypeBox.addItem("Square", 4);
   carrOscTypeBox.addItem("Sawtooth", 5);
-  carrOscTypeBox.onChange = [this] { carrOscTypeBoxChanged(); };
+  carrOscTypeBox.addItem("Noise", 6);
+  carrOscTypeBoxAttach.reset(
+      new juce::AudioProcessorValueTreeState::ComboBoxAttachment(
+          valueTreeState, "carrOscType", carrOscTypeBox));
 
   addAndMakeVisible(LFO1TypeBox);
   LFO1TypeBox.addItem("Sin", 1);
@@ -173,8 +179,6 @@ void Assignment3AudioProcessorEditor::paint(juce::Graphics& g) {
       getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
 void Assignment3AudioProcessorEditor::resized() {
-  // This is generally where you'll want to lay out the positions of any
-  // subcomponents in your editor..
   auto leftIndent = 120;
   auto vertIndent = 10;
   auto h = 20;
@@ -214,15 +218,6 @@ void Assignment3AudioProcessorEditor::resized() {
                          getWidth() - leftIndent - 10, h);
   encodeText.setBounds(20, 14 * vertIndent + 13 * h,
                        getWidth() - leftIndent - 10, h);
-}
-void Assignment3AudioProcessorEditor::moduTypeBoxChanged() {
-  audioProcessor.setModuType(moduTypeBox.getSelectedId());
-}
-void Assignment3AudioProcessorEditor::midiOscTypeBoxChanged() {
-  audioProcessor.setMidiOscType(midiOscTypeBox.getSelectedId());
-}
-void Assignment3AudioProcessorEditor::carrOscTypeBoxChanged() {
-  audioProcessor.setCarrOscType(carrOscTypeBox.getSelectedId());
 }
 void Assignment3AudioProcessorEditor::encodeButtonClicked() {
   auto state = encodeButton.getToggleState();

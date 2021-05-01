@@ -31,6 +31,9 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
   carrFreq = parameters.getRawParameterValue("carrFreq");
   noiseLevel = parameters.getRawParameterValue("noiseLevel");
   gain = parameters.getRawParameterValue("gain");
+  moduType = parameters.getRawParameterValue("moduType");
+  midiOscType = parameters.getRawParameterValue("midiOscType");
+  carrOscType = parameters.getRawParameterValue("carrOscType");
 
   attack = parameters.getRawParameterValue("attack");
   decay = parameters.getRawParameterValue("decay");
@@ -164,28 +167,6 @@ void Assignment3AudioProcessor::setStateInformation(const void* data,
     if (xmlState->hasTagName(parameters.state.getType()))
       parameters.replaceState(juce::ValueTree::fromXml(*xmlState));
 }
-
-void Assignment3AudioProcessor::setModuType(int mt) {
-  moduType = mt;
-  for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->setModuType(moduType);
-  }
-}
-void Assignment3AudioProcessor::setMidiOscType(int ot) {
-  midiOscType = ot;
-  for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->setMidiOscType(midiOscType);
-  }
-}
-void Assignment3AudioProcessor::setCarrOscType(int ot) {
-  carrOscType = ot;
-  for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->setCarrOscType(carrOscType);
-  }
-}
 void Assignment3AudioProcessor::setEncodeText(juce::String s) {
   for (int i = 0; i < countVoice; i++) {
     // SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
@@ -206,10 +187,18 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
 }
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
+  layout.add(std::make_unique<juce::AudioParameterInt>("midiOscType",
+                                                       "MIDI Type", 1, 6, 1));
+  layout.add(std::make_unique<juce::AudioParameterInt>(
+      "carrOscType", "Carrier Type", 1, 6, 1));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
-      "carrFreq", "Carrier Frequency", 440.f / 8, 440.f * 8, 440.f));
+      "carrFreq", "Carrier Frequency",
+      juce::NormalisableRange(440.f / 8, 440.f * 8, 1.f, 0.315f), 440.f));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       "noiseLevel", "Noise Level", 0.f, 1.f, 0.f));
+  layout.add(std::make_unique<juce::AudioParameterInt>(
+      "moduType", "Modulation Type", 1, 4, 1));
+
   layout.add(std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.f,
                                                          1.f, 0.5f));
   layout.add(std::make_unique<juce::AudioParameterFloat>("attack", "Attack",

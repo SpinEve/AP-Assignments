@@ -12,6 +12,14 @@ SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
   noiseLevel = valueTreeState.getRawParameterValue("noiseLevel");
   gain = valueTreeState.getRawParameterValue("gain");
 
+  moduType = valueTreeState.getRawParameterValue("moduType");
+
+  midiOscType = valueTreeState.getRawParameterValue("midiOscType");
+  valueTreeState.addParameterListener("midiOscType", this);
+
+  carrOscType = valueTreeState.getRawParameterValue("carrOscType");
+  valueTreeState.addParameterListener("carrOscType", this);
+
   attack = valueTreeState.getRawParameterValue("attack");
   decay = valueTreeState.getRawParameterValue("decay");
   sustain = valueTreeState.getRawParameterValue("sustain");
@@ -26,14 +34,12 @@ SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
   isOff = false;
   harEnabled = false;
   cntHar = 8;
-  moduType = 1;
 
   carrOsc = new SinOsc();
   carrOsc->setSampleRate(sr);
 
   midiOsc = new SinOsc();
   midiOsc->setSampleRate(sr);
-  midiOscType = 1;
 
   LFO1 = new SinOsc();
   LFO1->setSampleRate(sr);
@@ -93,8 +99,8 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
         currentSample += harSample;
       }
       // Modulation Part
-      if (moduType > 1)
-        currentSample = modulate(carrOsc, currentSample, moduType);
+      if ((*moduType) > 1)
+        currentSample = modulate(carrOsc, currentSample, (int)(*moduType));
       // Add some noise
       currentSample = (2 * random.nextFloat() - 1) * (*noiseLevel) +
                       currentSample * (1.f - (*noiseLevel));
@@ -118,6 +124,20 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
 bool SynthVoice::canPlaySound(juce::SynthesiserSound* sound) {
   return dynamic_cast<SynthSound*>(sound) != nullptr;
 }
+Oscillator* selectOsc(int ot) {
+  if (ot == 1)
+    return new SinOsc();
+  else if (ot == 2)
+    return new CosOsc();
+  else if (ot == 3)
+    return new TriOsc();
+  else if (ot == 4)
+    return new SqrOsc();
+  else if (ot == 5)
+    return new SawOsc();
+  else
+    return new NoiseOsc();
+}
 void SynthVoice::parameterChanged(const juce::String& parameterID,
                                   float newValue) {
   if (parameterID == "carrFreq") {
@@ -134,50 +154,22 @@ void SynthVoice::parameterChanged(const juce::String& parameterID,
   } else if (parameterID == "release") {
     envPara.release = newValue;
     env.setParameters(envPara);
-  }
-}
-void SynthVoice::setModuType(int mt) {
-  moduType = mt;
-  carrOsc->clear();  // Reset the carrier osc
-}
-Oscillator* selectOsc(int ot) {
-  if (ot == 1)
-    return new SinOsc();
-  else if (ot == 2)
-    return new CosOsc();
-  else if (ot == 3)
-    return new TriOsc();
-  else if (ot == 4)
-    return new SqrOsc();
-  else if (ot == 5)
-    return new SawOsc();
-  else
-    return new NoiseOsc();
-}
-void SynthVoice::setMidiOscType(int ot) {
-  // No change
-  if (midiOscType == ot) return;
-  midiOscType = ot;
-
-  delete midiOsc;
-  midiOsc = selectOsc(midiOscType);
-  midiOsc->setSampleRate(getSampleRate());
-  // also change harmonics if it's enabled
-  if (harEnabled) {
-    for (int i = 0; i < cntHar; i++) {
-      delete harOsc[i];
-      harOsc[i] = selectOsc(midiOscType);
-      harOsc[i]->setSampleRate(getSampleRate());
+  } else if (parameterID == "midiOscType") {
+    delete midiOsc;
+    midiOsc = selectOsc((int)newValue);
+    midiOsc->setSampleRate(getSampleRate());
+    if (harEnabled) {
+      for (int i = 0; i < cntHar; i++) {
+        delete harOsc[i];
+        harOsc[i] = selectOsc((int)newValue);
+        harOsc[i]->setSampleRate(getSampleRate());
+      }
     }
+  } else if (parameterID == "carrOscType") {
+    delete carrOsc;
+    carrOsc = selectOsc((int)newValue);
+    carrOsc->setSampleRate(getSampleRate());
   }
-}
-void SynthVoice::setCarrOscType(int ot) {
-  if (carrOscType == ot) return;
-  carrOscType = ot;
-
-  delete carrOsc;
-  carrOsc = selectOsc(carrOscType);
-  carrOsc->setSampleRate(getSampleRate());
 }
 void SynthVoice::setHar(bool enabled) {
   // No change
@@ -186,7 +178,7 @@ void SynthVoice::setHar(bool enabled) {
     harEnabled = true;
     for (int i = 0; i < cntHar; i++) {
       delete harOsc[i];
-      harOsc[i] = selectOsc(midiOscType);
+      harOsc[i] = selectOsc((int)(*midiOscType));
       harOsc[i]->setSampleRate(getSampleRate());
     }
   } else {  // Disable it

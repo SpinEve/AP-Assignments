@@ -51,20 +51,21 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
   //==============================================================================
   void getStateInformation(juce::MemoryBlock& destData) override;
   void setStateInformation(const void* data, int sizeInBytes) override;
-  void setModuType(int mt);
-  void setMidiOscType(int ot);
-  void setCarrOscType(int ot);
   void setLFO1(int type, int mt, float freq, float amp);
   void setEncodeText(juce::String s);
 
  private:
   //==============================================================================
-  int countVoice, moduType, midiOscType, carrOscType;
+  int countVoice;
   double sr;
   juce::Synthesiser synth;
   std::atomic<float>* carrFreq = nullptr;
   std::atomic<float>* noiseLevel = nullptr;
   std::atomic<float>* gain = nullptr;
+  std::atomic<float>* moduType = nullptr;
+  std::atomic<float>* midiOscType = nullptr;
+  std::atomic<float>* carrOscType = nullptr;
+
   std::atomic<float>* attack = nullptr;
   std::atomic<float>* decay = nullptr;
   std::atomic<float>* sustain = nullptr;
