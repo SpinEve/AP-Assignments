@@ -26,7 +26,7 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
               )
 #endif
       ,
-      parameters(*this, nullptr, juce::Identifier("Assignment 3"),
+      parameters(*this, nullptr, juce::Identifier("Assignment_3"),
                  createParameterLayout()) {
   carrFreq = parameters.getRawParameterValue("carrFreq");
   noiseLevel = parameters.getRawParameterValue("noiseLevel");
@@ -39,6 +39,11 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
   decay = parameters.getRawParameterValue("decay");
   sustain = parameters.getRawParameterValue("sustain");
   release = parameters.getRawParameterValue("release");
+
+  LFO1Type = parameters.getRawParameterValue("LFO1Type");
+  LFO1Freq = parameters.getRawParameterValue("LFO1Freq");
+  LFO1Amp = parameters.getRawParameterValue("LFO1Amp");
+  LFO1Modu = parameters.getRawParameterValue("LFO1Modu");
 
   countVoice = 4;
   for (auto i = 0; i < countVoice; i++) {
@@ -154,8 +159,8 @@ juce::AudioProcessorEditor* Assignment3AudioProcessor::createEditor() {
 void Assignment3AudioProcessor::getStateInformation(
     juce::MemoryBlock& destData) {
   auto state = parameters.copyState();
-  std::unique_ptr<juce::XmlElement> xml(state.createXml());
-  copyXmlToBinary(*xml, destData);
+  std::unique_ptr<juce::XmlElement> tmpXml(state.createXml());
+  copyXmlToBinary(*tmpXml, destData);
 }
 
 void Assignment3AudioProcessor::setStateInformation(const void* data,
@@ -171,13 +176,6 @@ void Assignment3AudioProcessor::setEncodeText(juce::String s) {
   for (int i = 0; i < countVoice; i++) {
     // SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
     // sv->setEncodeText(s);
-  }
-}
-void Assignment3AudioProcessor::setLFO1(int type, int mt, float freq,
-                                        float amp) {
-  for (int i = 0; i < countVoice; i++) {
-    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    sv->setLFO1(type, mt, freq, amp);
   }
 }
 //==============================================================================
@@ -209,5 +207,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
                                                          0.f, 4.f, 1.0f));
   layout.add(std::make_unique<juce::AudioParameterFloat>("release", "Release",
                                                          0.f, 4.f, 0.5f));
+
+  layout.add(std::make_unique<juce::AudioParameterInt>("LFO1Type", "LFO1 Type",
+                                                       1, 6, 1));
+  layout.add(std::make_unique<juce::AudioParameterInt>(
+      "LFO1Modu", "LFO1 Modulation", 1, 4, 1));
+  layout.add(std::make_unique<juce::AudioParameterFloat>(
+      "LFO1Freq", "LFO1 Freq", juce::NormalisableRange(0.1f, 10.f, 1.f, 0.3f),
+      1.f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("LFO1Amp", "LFO1 Amp",
+                                                         0.f, 1.f, 0.5f));
   return layout;
 }

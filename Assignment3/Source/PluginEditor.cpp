@@ -66,7 +66,7 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   LFO1SliderLabel.setText("LFO1 Frequency", juce::dontSendNotification);
   LFO1SliderLabel.attachToComponent(&LFO1Slider, true);
 
-  addAndMakeVisible(LFO1AmpSlider);
+  addAndMakeVisible(LFO1AmpSliderLabel);
   LFO1AmpSliderLabel.setText("LFO1 Amp", juce::dontSendNotification);
   LFO1AmpSliderLabel.attachToComponent(&LFO1AmpSlider, true);
 
@@ -103,11 +103,12 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
       valueTreeState, "release", releaseSlider));
 
   initSlider(LFO1Slider, 0.1f, 10.f, 0.01f, 1.f);
-  LFO1Slider.setSkewFactorFromMidPoint(1.f);
-  LFO1Slider.onValueChange = [this] { setLFO1(); };
+  LFO1FreqAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+      valueTreeState, "LFO1Freq", LFO1Slider));
 
   initSlider(LFO1AmpSlider, 0.f, 1.f, 0.01f, 0.5f);
-  LFO1AmpSlider.onValueChange = [this] { setLFO1(); };
+  LFO1AmpAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+      valueTreeState, "LFO1Amp", LFO1AmpSlider));
 
   // initSlider(osc2Slider, 0.f, 1.f, 0.01f, 0.1f);
   // osc2Slider.onValueChange = [this] { osc2SliderChanged(); };
@@ -150,14 +151,19 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   LFO1TypeBox.addItem("Tri", 3);
   LFO1TypeBox.addItem("Square", 4);
   LFO1TypeBox.addItem("Sawtooth", 5);
-  LFO1TypeBox.onChange = [this] { setLFO1(); };
+  LFO1TypeBox.addItem("Noise", 6);
+  LFO1TypeAttach.reset(
+      new juce::AudioProcessorValueTreeState::ComboBoxAttachment(
+          valueTreeState, "LFO1Type", LFO1TypeBox));
 
   addAndMakeVisible(LFO1ModuTypeBox);
   LFO1ModuTypeBox.addItem("None", 1);
   LFO1ModuTypeBox.addItem("FM", 2);
   LFO1ModuTypeBox.addItem("PM", 3);
   LFO1ModuTypeBox.addItem("AM", 4);
-  LFO1ModuTypeBox.onChange = [this] { setLFO1(); };
+  LFO1ModuAttach.reset(
+      new juce::AudioProcessorValueTreeState::ComboBoxAttachment(
+          valueTreeState, "LFO1Modu", LFO1ModuTypeBox));
 
   addAndMakeVisible(encodeButton);
   encodeButton.setButtonText("Text encoder");
@@ -233,9 +239,4 @@ void Assignment3AudioProcessorEditor::encodeTextChanged() {
   if (encodeButton.getToggleState()) {
     audioProcessor.setEncodeText(encodeText.getText());
   }
-}
-void Assignment3AudioProcessorEditor::setLFO1() {
-  audioProcessor.setLFO1(LFO1TypeBox.getSelectedId(),
-                         LFO1ModuTypeBox.getSelectedId(), LFO1Slider.getValue(),
-                         LFO1AmpSlider.getValue());
 }

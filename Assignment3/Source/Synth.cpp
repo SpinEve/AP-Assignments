@@ -30,6 +30,14 @@ SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
   valueTreeState.addParameterListener("sustain", this);
   valueTreeState.addParameterListener("release", this);
 
+  LFO1Type = valueTreeState.getRawParameterValue("LFO1Type");
+  LFO1Freq = valueTreeState.getRawParameterValue("LFO1Freq");
+  LFO1Amp = valueTreeState.getRawParameterValue("LFO1Amp");
+  LFO1Modu = valueTreeState.getRawParameterValue("LFO1Modu");
+
+  valueTreeState.addParameterListener("LFO1Type", this);
+  valueTreeState.addParameterListener("LFO1Freq", this);
+
   playing = false;
   isOff = false;
   harEnabled = false;
@@ -43,15 +51,12 @@ SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
 
   LFO1 = new SinOsc();
   LFO1->setSampleRate(sr);
-  LFO1ModuType = 1;
-  LFO1Amp = 0.f;
 
   env.setSampleRate(sr);
 }
 SynthVoice::~SynthVoice() {
   delete carrOsc;
   delete midiOsc;
-  // delete[] harOsc;
 }
 void SynthVoice::startNote(int midiNoteNumber, float velocity,
                            juce::SynthesiserSound* sound,
@@ -90,12 +95,13 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
                                  int startSample, int numSamples) {
   if (playing) {
     for (auto i = startSample; i < (startSample + numSamples); i++) {
-      float LFOSample = LFO1->getNextSample() * LFO1Amp;
-      currentSample = modulate(midiOsc, LFOSample, LFO1ModuType);
+      float LFOSample = LFO1->getNextSample() * (*LFO1Amp);
+      currentSample = modulate(midiOsc, LFOSample, (int)(*LFO1Modu));
       if (harEnabled) {
         float harSample = 0.f;
         for (auto j = 0; j < cntHar; j++)
-          harSample += modulate(harOsc[j], LFOSample, LFO1ModuType) * harAmp[j];
+          harSample +=
+              modulate(harOsc[j], LFOSample, (int)(*LFO1Modu)) * harAmp[j];
         currentSample += harSample;
       }
       // Modulation Part
@@ -169,6 +175,14 @@ void SynthVoice::parameterChanged(const juce::String& parameterID,
     delete carrOsc;
     carrOsc = selectOsc((int)newValue);
     carrOsc->setSampleRate(getSampleRate());
+  } else if (parameterID == "LFO1Type") {
+    auto f = LFO1->getDefFreq();
+    delete LFO1;
+    LFO1 = selectOsc((int)newValue);
+    LFO1->setSampleRate(getSampleRate());
+    LFO1->setDefFreq(f);
+  } else if (parameterID == "LFO1Freq") {
+    LFO1->setDefFreq(newValue);
   }
 }
 void SynthVoice::setHar(bool enabled) {
@@ -185,12 +199,4 @@ void SynthVoice::setHar(bool enabled) {
     harEnabled = false;
     for (int i = 0; i < cntHar; i++) delete harOsc[i];
   }
-}
-void SynthVoice::setLFO1(int type, int mt, float freq, float amp) {
-  delete LFO1;
-  LFO1 = selectOsc(type);
-  LFO1->setSampleRate(getSampleRate());
-  LFO1->setDefFreq(freq);
-  LFO1ModuType = mt;
-  LFO1Amp = amp;
 }

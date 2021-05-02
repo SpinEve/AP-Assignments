@@ -51,7 +51,6 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
   //==============================================================================
   void getStateInformation(juce::MemoryBlock& destData) override;
   void setStateInformation(const void* data, int sizeInBytes) override;
-  void setLFO1(int type, int mt, float freq, float amp);
   void setEncodeText(juce::String s);
 
  private:
@@ -70,6 +69,12 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
   std::atomic<float>* decay = nullptr;
   std::atomic<float>* sustain = nullptr;
   std::atomic<float>* release = nullptr;
+
+  std::atomic<float>* LFO1Type = nullptr;
+  std::atomic<float>* LFO1Freq = nullptr;
+  std::atomic<float>* LFO1Amp = nullptr;
+  std::atomic<float>* LFO1Modu = nullptr;
+
   juce::AudioProcessorValueTreeState parameters;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessor)
 };

@@ -28,7 +28,6 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
                   float defVal);
   void encodeButtonClicked();
   void encodeTextChanged();
-  void setLFO1();
 
  private:
   Assignment3AudioProcessor& audioProcessor;
@@ -44,8 +43,9 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   juce::AudioProcessorValueTreeState& valueTreeState;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
       gainAttach, noiseLevelAttach, carrFreqAttach, attackAttach, decayAttach,
-      sustainAttach, releaseAttach;
+      sustainAttach, releaseAttach, LFO1FreqAttach, LFO1AmpAttach;
   std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>
-      moduTypeBoxAttach, midiOscTypeBoxAttach, carrOscTypeBoxAttach;
+      moduTypeBoxAttach, midiOscTypeBoxAttach, carrOscTypeBoxAttach,
+      LFO1TypeAttach, LFO1ModuAttach;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)
 };

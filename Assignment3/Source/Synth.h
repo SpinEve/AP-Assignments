@@ -44,12 +44,15 @@ class SynthVoice : public juce::SynthesiserVoice,
   std::atomic<float>* midiOscType = nullptr;
   std::atomic<float>* carrOscType = nullptr;
 
+  std::atomic<float>* LFO1Type = nullptr;
+  std::atomic<float>* LFO1Freq = nullptr;
+  std::atomic<float>* LFO1Amp = nullptr;
+  std::atomic<float>* LFO1Modu = nullptr;
+
   int cntHar;
   Oscillator *carrOsc, *midiOsc, *LFO1;
   Oscillator* harOsc[8];
 
-  int LFO1ModuType;
-  float LFO1Amp;
   float harAmp[8];
   juce::Random random;
   juce::ADSR env;
