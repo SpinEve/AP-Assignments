@@ -70,6 +70,14 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   LFO1AmpSliderLabel.setText("LFO1 Amp", juce::dontSendNotification);
   LFO1AmpSliderLabel.attachToComponent(&LFO1AmpSlider, true);
 
+  addAndMakeVisible(harLabel);
+  harLabel.setText("Harmonics Preset", juce::dontSendNotification);
+  harLabel.attachToComponent(&harBox, true);
+
+  addAndMakeVisible(harGainLabel);
+  harGainLabel.setText("Harmonics Gain", juce::dontSendNotification);
+  harGainLabel.attachToComponent(&harGainSlider, true);
+
   // Sliders
   float defCarrFreq = 440.f;
   initSlider(carrFreqSlider, defCarrFreq / 8, defCarrFreq * 8, 1.f,
@@ -165,6 +173,19 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
       new juce::AudioProcessorValueTreeState::ComboBoxAttachment(
           valueTreeState, "LFO1Modu", LFO1ModuTypeBox));
 
+  addAndMakeVisible(harBox);
+  harBox.addItem("None", 1);
+  harBox.addItem("1/x", 2);
+  harBox.addItem("1/x^2", 3);
+  harBox.addItem("Linear Decrease", 4);
+  harBoxAttach.reset(new juce::AudioProcessorValueTreeState::ComboBoxAttachment(
+      valueTreeState, "harType", harBox));
+
+  addAndMakeVisible(harGainSlider);
+  initSlider(harGainSlider, 0.f, 2.f, 0.01f, 1.f);
+  harGainAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+      valueTreeState, "harGain", harGainSlider));
+
   addAndMakeVisible(encodeButton);
   encodeButton.setButtonText("Text encoder");
   encodeButton.onClick = [this] { encodeButtonClicked(); };
@@ -220,9 +241,15 @@ void Assignment3AudioProcessorEditor::resized() {
                        getWidth() - leftIndent - 10, h);
   LFO1AmpSlider.setBounds(leftIndent, 12 * vertIndent + 11 * h,
                           getWidth() - leftIndent - 10, h);
-  encodeButton.setBounds(20, 13 * vertIndent + 12 * h,
+
+  harBox.setBounds(leftIndent, 13 * vertIndent + 12 * h,
+                   getWidth() - leftIndent - 10, h);
+  harGainSlider.setBounds(leftIndent, 14 * vertIndent + 13 * h,
+                          getWidth() - leftIndent - 10, h);
+
+  encodeButton.setBounds(20, 15 * vertIndent + 14 * h,
                          getWidth() - leftIndent - 10, h);
-  encodeText.setBounds(20, 14 * vertIndent + 13 * h,
+  encodeText.setBounds(20, 16 * vertIndent + 15 * h,
                        getWidth() - leftIndent - 10, h);
 }
 void Assignment3AudioProcessorEditor::encodeButtonClicked() {

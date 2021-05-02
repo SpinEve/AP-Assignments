@@ -45,7 +45,8 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
   LFO1Amp = parameters.getRawParameterValue("LFO1Amp");
   LFO1Modu = parameters.getRawParameterValue("LFO1Modu");
 
-  countVoice = 4;
+  harGain = parameters.getRawParameterValue("harGain");
+
   for (auto i = 0; i < countVoice; i++) {
     synth.addVoice(new SynthVoice(parameters));
   }
@@ -213,9 +214,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
   layout.add(std::make_unique<juce::AudioParameterInt>(
       "LFO1Modu", "LFO1 Modulation", 1, 4, 1));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
-      "LFO1Freq", "LFO1 Freq", juce::NormalisableRange(0.1f, 10.f, 1.f, 0.3f),
+      "LFO1Freq", "LFO1 Freq", juce::NormalisableRange(0.1f, 10.f, 0.01f, 0.3f),
       1.f));
   layout.add(std::make_unique<juce::AudioParameterFloat>("LFO1Amp", "LFO1 Amp",
                                                          0.f, 1.f, 0.5f));
+
+  layout.add(std::make_unique<juce::AudioParameterInt>(
+      "harType", "Harmoincs Preset", 1, 4, 1));
+  layout.add(std::make_unique<juce::AudioParameterFloat>(
+      "harGain", "Harmoincs Gain", 0.f, 2.f, 1.f));
   return layout;
 }

@@ -33,19 +33,20 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   Assignment3AudioProcessor& audioProcessor;
   juce::Label freqLabel, moduLabel, midiLabel, noiseLabel, carrLabel, gainLabel,
       ADSRLabel, LFO1TypeLabel, LFO1ModuLabel, LFO1SliderLabel,
-      LFO1AmpSliderLabel;
+      LFO1AmpSliderLabel, harLabel, harGainLabel;
   juce::Slider carrFreqSlider, noiseSlider, gainSlider, attackSlider,
-      decaySlider, sustainSlider, releaseSlider, LFO1Slider, LFO1AmpSlider;
+      decaySlider, sustainSlider, releaseSlider, LFO1Slider, LFO1AmpSlider,
+      harGainSlider;
   juce::ComboBox moduTypeBox, midiOscTypeBox, carrOscTypeBox, LFO1TypeBox,
-      LFO1ModuTypeBox;
+      LFO1ModuTypeBox, harBox;
   juce::TextEditor encodeText;
   juce::ToggleButton encodeButton;
   juce::AudioProcessorValueTreeState& valueTreeState;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
       gainAttach, noiseLevelAttach, carrFreqAttach, attackAttach, decayAttach,
-      sustainAttach, releaseAttach, LFO1FreqAttach, LFO1AmpAttach;
+      sustainAttach, releaseAttach, LFO1FreqAttach, LFO1AmpAttach, harGainAttach;
   std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>
       moduTypeBoxAttach, midiOscTypeBoxAttach, carrOscTypeBoxAttach,
-      LFO1TypeAttach, LFO1ModuAttach;
+      LFO1TypeAttach, LFO1ModuAttach, harBoxAttach;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)
 };

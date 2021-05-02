@@ -55,7 +55,7 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
 
  private:
   //==============================================================================
-  int countVoice;
+  int countVoice = 4;
   double sr;
   juce::Synthesiser synth;
   std::atomic<float>* carrFreq = nullptr;
@@ -74,6 +74,10 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
   std::atomic<float>* LFO1Freq = nullptr;
   std::atomic<float>* LFO1Amp = nullptr;
   std::atomic<float>* LFO1Modu = nullptr;
+
+  std::atomic<float>* harType = nullptr;
+  std::atomic<float>* harGain = nullptr;
+  
 
   juce::AudioProcessorValueTreeState parameters;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessor)

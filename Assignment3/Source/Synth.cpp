@@ -38,10 +38,9 @@ SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
   valueTreeState.addParameterListener("LFO1Type", this);
   valueTreeState.addParameterListener("LFO1Freq", this);
 
-  playing = false;
-  isOff = false;
-  harEnabled = false;
-  cntHar = 8;
+  harGain = valueTreeState.getRawParameterValue("harGain");
+  harType = valueTreeState.getRawParameterValue("harType");
+  valueTreeState.addParameterListener("harType", this);
 
   carrOsc = new SinOsc();
   carrOsc->setSampleRate(sr);
@@ -53,6 +52,12 @@ SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
   LFO1->setSampleRate(sr);
 
   env.setSampleRate(sr);
+
+  for (int i = 0; i < cntHar; i++) {
+    harOsc[i] = new SinOsc();
+    harOsc[i]->setSampleRate(sr);
+    harAmp[i] = 0.f;
+  }
 }
 SynthVoice::~SynthVoice() {
   delete carrOsc;
@@ -63,12 +68,8 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity,
                            int currentPitchWheelPosition) {
   auto freq = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
   midiOsc->setDefFreq(freq);
-  if (harEnabled) {
-    for (int i = 0; i < cntHar; i++) {
-      harOsc[i]->setDefFreq(freq * (i + 2));
-      harAmp[i] = 1.f / (i + 1);
-    }
-  }
+  for (int i = 0; i < cntHar; i++) harOsc[i]->setDefFreq(freq * (i + 2));
+
   env.noteOn();
   playing = true;
   isOff = false;
@@ -97,13 +98,11 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
     for (auto i = startSample; i < (startSample + numSamples); i++) {
       float LFOSample = LFO1->getNextSample() * (*LFO1Amp);
       currentSample = modulate(midiOsc, LFOSample, (int)(*LFO1Modu));
-      if (harEnabled) {
-        float harSample = 0.f;
-        for (auto j = 0; j < cntHar; j++)
-          harSample +=
-              modulate(harOsc[j], LFOSample, (int)(*LFO1Modu)) * harAmp[j];
-        currentSample += harSample;
-      }
+      float harSample = 0.f;
+      for (auto j = 0; j < cntHar; j++)
+        harSample +=
+            modulate(harOsc[j], LFOSample, (int)(*LFO1Modu)) * harAmp[j];
+      currentSample += harSample * (*harGain);
       // Modulation Part
       if ((*moduType) > 1)
         currentSample = modulate(carrOsc, currentSample, (int)(*moduType));
@@ -164,12 +163,10 @@ void SynthVoice::parameterChanged(const juce::String& parameterID,
     delete midiOsc;
     midiOsc = selectOsc((int)newValue);
     midiOsc->setSampleRate(getSampleRate());
-    if (harEnabled) {
-      for (int i = 0; i < cntHar; i++) {
-        delete harOsc[i];
-        harOsc[i] = selectOsc((int)newValue);
-        harOsc[i]->setSampleRate(getSampleRate());
-      }
+    for (int i = 0; i < cntHar; i++) {
+      delete harOsc[i];
+      harOsc[i] = selectOsc((int)newValue);
+      harOsc[i]->setSampleRate(getSampleRate());
     }
   } else if (parameterID == "carrOscType") {
     delete carrOsc;
@@ -183,20 +180,17 @@ void SynthVoice::parameterChanged(const juce::String& parameterID,
     LFO1->setDefFreq(f);
   } else if (parameterID == "LFO1Freq") {
     LFO1->setDefFreq(newValue);
-  }
-}
-void SynthVoice::setHar(bool enabled) {
-  // No change
-  if (enabled == harEnabled) return;
-  if (enabled) {  // Enable it
-    harEnabled = true;
-    for (int i = 0; i < cntHar; i++) {
-      delete harOsc[i];
-      harOsc[i] = selectOsc((int)(*midiOscType));
-      harOsc[i]->setSampleRate(getSampleRate());
+  } else if (parameterID == "harType") {
+    int tmp = (int)newValue;
+    for (auto i = 0; i < cntHar; i++) {
+      if (tmp == 1)
+        harAmp[i] = 0.f;
+      else if (tmp == 2)
+        harAmp[i] = 1.f / (i + 1);
+      else if (tmp == 3)
+        harAmp[i] = 1.f / ((i + 1) * (i + 1));
+      else if (tmp == 4)
+        harAmp[i] = (float)(cntHar - i) / cntHar;
     }
-  } else {  // Disable it
-    harEnabled = false;
-    for (int i = 0; i < cntHar; i++) delete harOsc[i];
   }
 }

@@ -25,13 +25,11 @@ class SynthVoice : public juce::SynthesiserVoice,
   void parameterChanged(const juce::String& parameterID,
                         float newValue) override;
 
-  void setHar(bool enabled);
-  void setLFO1(int type, int moduType, float freq, float amp);
-
   ~SynthVoice();
 
  private:
-  bool playing, isOff, harEnabled;
+  bool playing = false;
+  bool isOff = false;
   float currentSample;
   std::atomic<float>* gain = nullptr;
   std::atomic<float>* carrFreq = nullptr;
@@ -49,11 +47,13 @@ class SynthVoice : public juce::SynthesiserVoice,
   std::atomic<float>* LFO1Amp = nullptr;
   std::atomic<float>* LFO1Modu = nullptr;
 
-  int cntHar;
+  int cntHar = 8;
   Oscillator *carrOsc, *midiOsc, *LFO1;
   Oscillator* harOsc[8];
-
+  std::atomic<float>* harGain = nullptr;
+  std::atomic<float>* harType = nullptr;
   float harAmp[8];
+  
   juce::Random random;
   juce::ADSR env;
   juce::ADSR::Parameters envPara;
