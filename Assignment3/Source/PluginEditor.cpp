@@ -13,20 +13,20 @@
 void Assignment3AudioProcessorEditor::initSlider(juce::Slider& sld, float min,
                                                  float max, float interVal,
                                                  float defVal) {
-  addAndMakeVisible(sld);
-  sld.setRange(min, max, interVal);
-  sld.setValue(defVal);
-  sld.setDoubleClickReturnValue(true, defVal);
+  addAndMakeVisible(sld);                       // Add
+  sld.setRange(min, max, interVal);             // Range
+  sld.setValue(defVal);                         // Defval
+  sld.setDoubleClickReturnValue(true, defVal);  // Double click
 }
 //==============================================================================
 Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
     Assignment3AudioProcessor& p, juce::AudioProcessorValueTreeState& vts)
     : AudioProcessorEditor(&p), audioProcessor(p), valueTreeState(vts) {
-  // Make sure that before the constructor has finished, you've set the
-  // editor's size to whatever you need it to be.
   setSize(800, 600);
 
-  // Labels
+  //==============================================================================
+  // Label inits: set text and attach to their slider/combobox
+
   addAndMakeVisible(freqLabel);
   freqLabel.setText("Carrier Frequency", juce::dontSendNotification);
   freqLabel.attachToComponent(&carrFreqSlider, true);
@@ -78,7 +78,9 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   harGainLabel.setText("Harmonics Gain", juce::dontSendNotification);
   harGainLabel.attachToComponent(&harGainSlider, true);
 
-  // Sliders
+  //==============================================================================
+  // Slider inits: set range and attach them to valueTreeState
+
   float defCarrFreq = 440.f;
   initSlider(carrFreqSlider, defCarrFreq / 8, defCarrFreq * 8, 1.f,
              defCarrFreq);
@@ -118,10 +120,16 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   LFO1AmpAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
       valueTreeState, "LFO1Amp", LFO1AmpSlider));
 
-  // initSlider(osc2Slider, 0.f, 1.f, 0.01f, 0.1f);
-  // osc2Slider.onValueChange = [this] { osc2SliderChanged(); };
+  initSlider(harGainSlider, 0.f, 1.f, 0.01f, 0.5f);
+  harGainAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+      valueTreeState, "harGain", harGainSlider));
 
-  // Boxes
+  // Future: More LFO!
+  // initSlider(LFO2Slider, 0.f, 1.f, 0.01f, 0.1f);
+  // LFO2Slider.onValueChange = [this] { LFO2SliderChanged(); };
+
+  //==============================================================================
+  // Combobox inits
   addAndMakeVisible(moduTypeBox);
   moduTypeBox.addItem("None", 1);
   moduTypeBox.addItem("FM", 2);
@@ -181,10 +189,8 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
   harBoxAttach.reset(new juce::AudioProcessorValueTreeState::ComboBoxAttachment(
       valueTreeState, "harType", harBox));
 
-  addAndMakeVisible(harGainSlider);
-  initSlider(harGainSlider, 0.f, 1.f, 0.01f, 0.5f);
-  harGainAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
-      valueTreeState, "harGain", harGainSlider));
+  //==============================================================================
+  // Encoders inits
 
   addAndMakeVisible(encodeButton);
   encodeButton.setButtonText("Text encoder (Experimental)");
@@ -208,26 +214,36 @@ void Assignment3AudioProcessorEditor::paint(juce::Graphics& g) {
       getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
 void Assignment3AudioProcessorEditor::resized() {
-  auto leftIndent = 120;
-  auto vertIndent = 10;
-  auto h = 20;
+  auto leftIndent = 120;  // Indent of left
+  auto vertIndent = 10;   // Indent of vertical
+  auto h = 20;            // Height of widgets
 
+  // MIDI Type
   midiOscTypeBox.setBounds(leftIndent, vertIndent, getWidth() - leftIndent - 10,
                            h);
+
+  // Modulation
   moduTypeBox.setBounds(leftIndent, 2 * vertIndent + h,
                         getWidth() - leftIndent - 10, h);
+
+  // Carrier
   carrOscTypeBox.setBounds(leftIndent, 3 * vertIndent + 2 * h,
                            getWidth() - leftIndent - 10, h);
   carrFreqSlider.setBounds(leftIndent, 4 * vertIndent + 3 * h,
                            getWidth() - leftIndent - 10, h);
+
+  // Noise
   noiseSlider.setBounds(leftIndent, 5 * vertIndent + 4 * h,
                         getWidth() - leftIndent - 10, h);
+
+  // Gain
   gainSlider.setBounds(leftIndent, 6 * vertIndent + 5 * h,
                        getWidth() - leftIndent - 10, h);
 
+  // ADSR
+  auto adsrWidth = getWidth() / 4 - 15;
   ADSRLabel.setBounds(20, 7 * vertIndent + 6 * h, getWidth() - leftIndent - 10,
                       h);
-  auto adsrWidth = getWidth() / 4 - 15;
   attackSlider.setBounds(20, 8 * vertIndent + 7 * h, adsrWidth, h);
   sustainSlider.setBounds(20 + adsrWidth + 10, 8 * vertIndent + 7 * h,
                           adsrWidth, h);
@@ -235,6 +251,8 @@ void Assignment3AudioProcessorEditor::resized() {
                         adsrWidth, h);
   releaseSlider.setBounds(20 + 3 * (adsrWidth + 10), 8 * vertIndent + 7 * h,
                           adsrWidth, h);
+
+  // LFO1
   LFO1TypeBox.setBounds(leftIndent, 9 * vertIndent + 8 * h,
                         getWidth() - leftIndent - 10, h);
   LFO1ModuTypeBox.setBounds(leftIndent, 10 * vertIndent + 9 * h,
@@ -244,11 +262,13 @@ void Assignment3AudioProcessorEditor::resized() {
   LFO1AmpSlider.setBounds(leftIndent, 12 * vertIndent + 11 * h,
                           getWidth() - leftIndent - 10, h);
 
+  // Harmonic
   harBox.setBounds(leftIndent, 13 * vertIndent + 12 * h,
                    getWidth() - leftIndent - 10, h);
   harGainSlider.setBounds(leftIndent, 14 * vertIndent + 13 * h,
                           getWidth() - leftIndent - 10, h);
 
+  // Encoder
   encodeButton.setBounds(20, 15 * vertIndent + 14 * h,
                          getWidth() - leftIndent - 10, h);
   encodeText.setBounds(20, 16 * vertIndent + 15 * h,
@@ -257,11 +277,9 @@ void Assignment3AudioProcessorEditor::resized() {
 void Assignment3AudioProcessorEditor::encodeButtonClicked() {
   auto state = encodeButton.getToggleState();
   if (state) {
-    // harBox.setVisible(false);
     encodeText.setVisible(true);
-    midiOscTypeBox.setSelectedId(1);  // Sin oscillator for encoding
+    midiOscTypeBox.setSelectedId(1);  // Set Sin oscillator for better encoding
   } else {
-    // harBox.setVisible(true);
     encodeText.setVisible(false);
     encodeText.clear();
   }

@@ -24,9 +24,18 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   //==============================================================================
   void paint(juce::Graphics&) override;
   void resized() override;
+
+  //==============================================================================
+  /** A function to simplify slider initialization
+   */
   void initSlider(juce::Slider& sld, float min, float max, float interVal,
                   float defVal);
+  /** Click encode button, which will make encodeTextBox visible and set
+   * encodeEnabled
+   */
   void encodeButtonClicked();
+  /** When encode textbox changed
+   */
   void encodeTextChanged();
 
  private:

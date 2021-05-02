@@ -1,8 +1,8 @@
 #pragma once
 #include <JuceHeader.h>
 
-#include "Oscillator.h"
 #include "Encoder.h"
+#include "Oscillator.h"
 
 class SynthSound : public juce::SynthesiserSound {
  public:
@@ -13,6 +13,7 @@ class SynthSound : public juce::SynthesiserSound {
 class SynthVoice : public juce::SynthesiserVoice,
                    public juce::AudioProcessorValueTreeState::Listener {
  public:
+  //==============================================================================
   SynthVoice(juce::AudioProcessorValueTreeState&);
   void startNote(int midiNoteNumber, float velocity,
                  juce::SynthesiserSound* sound,
@@ -23,8 +24,16 @@ class SynthVoice : public juce::SynthesiserVoice,
   void pitchWheelMoved(int) override {}
   void controllerMoved(int, int) override {}
   bool canPlaySound(juce::SynthesiserSound* sound) override;
+
+  //==============================================================================
+  /** Listener function for valueTreeState
+   */
   void parameterChanged(const juce::String& parameterID,
                         float newValue) override;
+
+  //==============================================================================
+  /** Encoding Text from a juce::String
+   */
   void setEncodeText(juce::String);
 
   ~SynthVoice();
@@ -55,7 +64,7 @@ class SynthVoice : public juce::SynthesiserVoice,
   std::atomic<float>* harGain = nullptr;
   std::atomic<float>* harType = nullptr;
   float harAmp[8], encoHarAmp[8];
-  
+
   std::atomic<float>* encodeEnabled = nullptr;
   Encoder enco;
 
