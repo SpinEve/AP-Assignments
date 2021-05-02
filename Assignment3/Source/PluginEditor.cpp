@@ -182,13 +182,15 @@ Assignment3AudioProcessorEditor::Assignment3AudioProcessorEditor(
       valueTreeState, "harType", harBox));
 
   addAndMakeVisible(harGainSlider);
-  initSlider(harGainSlider, 0.f, 2.f, 0.01f, 1.f);
+  initSlider(harGainSlider, 0.f, 1.f, 0.01f, 0.5f);
   harGainAttach.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
       valueTreeState, "harGain", harGainSlider));
 
   addAndMakeVisible(encodeButton);
-  encodeButton.setButtonText("Text encoder");
+  encodeButton.setButtonText("Text encoder (Experimental)");
   encodeButton.onClick = [this] { encodeButtonClicked(); };
+  encodeAttach.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(
+      valueTreeState, "encodeEnabled", encodeButton));
 
   addAndMakeVisible(encodeText);
   encodeText.setInputRestrictions(32, "abcdefghijklmnopqrstuvwxyz ");
@@ -255,9 +257,11 @@ void Assignment3AudioProcessorEditor::resized() {
 void Assignment3AudioProcessorEditor::encodeButtonClicked() {
   auto state = encodeButton.getToggleState();
   if (state) {
+    // harBox.setVisible(false);
     encodeText.setVisible(true);
     midiOscTypeBox.setSelectedId(1);  // Sin oscillator for encoding
   } else {
+    // harBox.setVisible(true);
     encodeText.setVisible(false);
     encodeText.clear();
   }

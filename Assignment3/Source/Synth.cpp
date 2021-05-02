@@ -2,6 +2,8 @@
 
 #include <JuceHeader.h>
 
+#include "Encoder.h"
+
 SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
     : valueTreeState(vts) {
   auto sr = getSampleRate();
@@ -42,6 +44,8 @@ SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
   harType = valueTreeState.getRawParameterValue("harType");
   valueTreeState.addParameterListener("harType", this);
 
+  encodeEnabled = valueTreeState.getRawParameterValue("encodeEnabled");
+
   carrOsc = new SinOsc();
   carrOsc->setSampleRate(sr);
 
@@ -53,10 +57,13 @@ SynthVoice::SynthVoice(juce::AudioProcessorValueTreeState& vts)
 
   env.setSampleRate(sr);
 
+  enco.setSampleRate(sr);
+
   for (int i = 0; i < cntHar; i++) {
     harOsc[i] = new SinOsc();
     harOsc[i]->setSampleRate(sr);
     harAmp[i] = 0.f;
+    encoHarAmp[i] = 0.f;
   }
 }
 SynthVoice::~SynthVoice() {
@@ -98,25 +105,40 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
     for (auto i = startSample; i < (startSample + numSamples); i++) {
       float LFOSample = LFO1->getNextSample() * (*LFO1Amp);
       currentSample = modulate(midiOsc, LFOSample, (int)(*LFO1Modu));
+
+      // Harmonics Part
       float harSample = 0.f;
-      for (auto j = 0; j < cntHar; j++)
-        harSample +=
-            modulate(harOsc[j], LFOSample, (int)(*LFO1Modu)) * harAmp[j];
-      currentSample += harSample * (*harGain);
+      if ((bool)(*encodeEnabled)) {  // Encoder enabled
+        enco.setNextHar(encoHarAmp, cntHar);
+        for (auto j = 0; j < cntHar; j++)
+          harSample += modulate(harOsc[j], LFOSample, (int)(*LFO1Modu)) *
+                       harAmp[j] * (1 + encoHarAmp[j]);
+      } else {  // Otherwise
+        for (auto j = 0; j < cntHar; j++)
+          harSample +=
+              modulate(harOsc[j], LFOSample, (int)(*LFO1Modu)) * harAmp[j];
+      }
+      currentSample += harSample * (*harGain) / 2;
+
       // Modulation Part
       if ((*moduType) > 1)
         currentSample = modulate(carrOsc, currentSample, (int)(*moduType));
+
       // Add some noise
       currentSample = (2 * random.nextFloat() - 1) * (*noiseLevel) +
                       currentSample * (1.f - (*noiseLevel));
+
       // Envelope
       currentSample *= env.getNextSample();
+
       // Gain, halved so not too loud
       currentSample *= (*gain) / 2;
+
       // Render
       for (auto ch = 0; ch < outputBuffer.getNumChannels(); ch++) {
         outputBuffer.addSample(ch, i, currentSample);
       }
+
       // Check if this note should be cleaned
       if (isOff && !env.isActive()) {
         playing = false;
@@ -194,3 +216,4 @@ void SynthVoice::parameterChanged(const juce::String& parameterID,
     }
   }
 }
+void SynthVoice::setEncodeText(juce::String s) { enco.setText(s); }

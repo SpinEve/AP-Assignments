@@ -47,6 +47,8 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
 
   harGain = parameters.getRawParameterValue("harGain");
 
+  encodeEnabled = parameters.getRawParameterValue("encodeEnabled");
+
   for (auto i = 0; i < countVoice; i++) {
     synth.addVoice(new SynthVoice(parameters));
   }
@@ -175,8 +177,8 @@ void Assignment3AudioProcessor::setStateInformation(const void* data,
 }
 void Assignment3AudioProcessor::setEncodeText(juce::String s) {
   for (int i = 0; i < countVoice; i++) {
-    // SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
-    // sv->setEncodeText(s);
+    SynthVoice* sv = dynamic_cast<SynthVoice*>(synth.getVoice(i));
+    sv->setEncodeText(s);
   }
 }
 //==============================================================================
@@ -220,8 +222,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
                                                          0.f, 1.f, 0.5f));
 
   layout.add(std::make_unique<juce::AudioParameterInt>(
-      "harType", "Harmoincs Preset", 1, 4, 1));
+      "harType", "Harmonics Preset", 1, 4, 1));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
-      "harGain", "Harmoincs Gain", 0.f, 2.f, 1.f));
+      "harGain", "Harmonics Gain", 0.f, 1.f, 0.5f));
+
+  layout.add(std::make_unique<juce::AudioParameterBool>(
+      "encodeEnabled", "Encode Enable", false));
   return layout;
 }

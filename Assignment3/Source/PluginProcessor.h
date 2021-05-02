@@ -77,6 +77,8 @@ class Assignment3AudioProcessor : public juce::AudioProcessor {
 
   std::atomic<float>* harType = nullptr;
   std::atomic<float>* harGain = nullptr;
+
+  std::atomic<float>* encodeEnabled = nullptr;
   
 
   juce::AudioProcessorValueTreeState parameters;

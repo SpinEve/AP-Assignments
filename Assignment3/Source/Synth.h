@@ -2,6 +2,7 @@
 #include <JuceHeader.h>
 
 #include "Oscillator.h"
+#include "Encoder.h"
 
 class SynthSound : public juce::SynthesiserSound {
  public:
@@ -24,6 +25,7 @@ class SynthVoice : public juce::SynthesiserVoice,
   bool canPlaySound(juce::SynthesiserSound* sound) override;
   void parameterChanged(const juce::String& parameterID,
                         float newValue) override;
+  void setEncodeText(juce::String);
 
   ~SynthVoice();
 
@@ -52,8 +54,11 @@ class SynthVoice : public juce::SynthesiserVoice,
   Oscillator* harOsc[8];
   std::atomic<float>* harGain = nullptr;
   std::atomic<float>* harType = nullptr;
-  float harAmp[8];
+  float harAmp[8], encoHarAmp[8];
   
+  std::atomic<float>* encodeEnabled = nullptr;
+  Encoder enco;
+
   juce::Random random;
   juce::ADSR env;
   juce::ADSR::Parameters envPara;

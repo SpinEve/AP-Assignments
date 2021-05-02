@@ -44,9 +44,12 @@ class Assignment3AudioProcessorEditor : public juce::AudioProcessorEditor {
   juce::AudioProcessorValueTreeState& valueTreeState;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
       gainAttach, noiseLevelAttach, carrFreqAttach, attackAttach, decayAttach,
-      sustainAttach, releaseAttach, LFO1FreqAttach, LFO1AmpAttach, harGainAttach;
+      sustainAttach, releaseAttach, LFO1FreqAttach, LFO1AmpAttach,
+      harGainAttach;
   std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>
       moduTypeBoxAttach, midiOscTypeBoxAttach, carrOscTypeBoxAttach,
       LFO1TypeAttach, LFO1ModuAttach, harBoxAttach;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
+      encodeAttach;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Assignment3AudioProcessorEditor)
 };
