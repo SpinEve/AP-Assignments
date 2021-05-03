@@ -11,6 +11,7 @@
 #include "PluginEditor.h"
 #include "Synth.h"
 
+/// Create Parameter layout for ValueTreeState
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 //==============================================================================
 Assignment3AudioProcessor::Assignment3AudioProcessor()
@@ -28,6 +29,7 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
       ,
       parameters(*this, nullptr, juce::Identifier("Assignment_3"),
                  createParameterLayout()) {
+
   carrFreq = parameters.getRawParameterValue("carrFreq");
   noiseLevel = parameters.getRawParameterValue("noiseLevel");
   gain = parameters.getRawParameterValue("gain");
@@ -35,20 +37,25 @@ Assignment3AudioProcessor::Assignment3AudioProcessor()
   midiOscType = parameters.getRawParameterValue("midiOscType");
   carrOscType = parameters.getRawParameterValue("carrOscType");
 
+  // ADSR
   attack = parameters.getRawParameterValue("attack");
   decay = parameters.getRawParameterValue("decay");
   sustain = parameters.getRawParameterValue("sustain");
   release = parameters.getRawParameterValue("release");
 
+  // LFO1
   LFO1Type = parameters.getRawParameterValue("LFO1Type");
   LFO1Freq = parameters.getRawParameterValue("LFO1Freq");
   LFO1Amp = parameters.getRawParameterValue("LFO1Amp");
   LFO1Modu = parameters.getRawParameterValue("LFO1Modu");
 
+  // Harmonics Gain
   harGain = parameters.getRawParameterValue("harGain");
 
+  // Encoder
   encodeEnabled = parameters.getRawParameterValue("encodeEnabled");
 
+  // Add SynthVoice and SynthSound
   for (auto i = 0; i < countVoice; i++) {
     synth.addVoice(new SynthVoice(parameters));
   }
@@ -146,6 +153,7 @@ bool Assignment3AudioProcessor::isBusesLayoutSupported(
 
 void Assignment3AudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                              juce::MidiBuffer& midiMessages) {
+  // Just give it to Synth
   synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
@@ -159,13 +167,17 @@ juce::AudioProcessorEditor* Assignment3AudioProcessor::createEditor() {
 }
 
 //==============================================================================
+/** Save state of parameter to destData in xml format.
+ *  Code reference to JUCE tutorial
+ */
 void Assignment3AudioProcessor::getStateInformation(
     juce::MemoryBlock& destData) {
   auto state = parameters.copyState();
   std::unique_ptr<juce::XmlElement> tmpXml(state.createXml());
   copyXmlToBinary(*tmpXml, destData);
 }
-
+/** Load state from data (xml) to parameters
+ */
 void Assignment3AudioProcessor::setStateInformation(const void* data,
                                                     int sizeInBytes) {
   std::unique_ptr<juce::XmlElement> xmlState(
@@ -188,20 +200,27 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
 }
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+  // MIDI
   layout.add(std::make_unique<juce::AudioParameterInt>("midiOscType",
                                                        "MIDI Type", 1, 6, 1));
+  // Carrier
   layout.add(std::make_unique<juce::AudioParameterInt>(
       "carrOscType", "Carrier Type", 1, 6, 1));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       "carrFreq", "Carrier Frequency",
       juce::NormalisableRange(440.f / 8, 440.f * 8, 1.f, 0.315f), 440.f));
+  // Noise
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       "noiseLevel", "Noise Level", 0.f, 1.f, 0.f));
+  // Modulation
   layout.add(std::make_unique<juce::AudioParameterInt>(
       "moduType", "Modulation Type", 1, 4, 1));
 
+  // Gain
   layout.add(std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.f,
                                                          1.f, 0.5f));
+  // ADSR
   layout.add(std::make_unique<juce::AudioParameterFloat>("attack", "Attack",
                                                          0.f, 4.f, 0.1f));
   layout.add(std::make_unique<juce::AudioParameterFloat>("decay", "Decay", 0.f,
@@ -211,21 +230,24 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
   layout.add(std::make_unique<juce::AudioParameterFloat>("release", "Release",
                                                          0.f, 4.f, 0.5f));
 
+  // LFO1
   layout.add(std::make_unique<juce::AudioParameterInt>("LFO1Type", "LFO1 Type",
                                                        1, 6, 1));
   layout.add(std::make_unique<juce::AudioParameterInt>(
       "LFO1Modu", "LFO1 Modulation", 1, 4, 1));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       "LFO1Freq", "LFO1 Freq", juce::NormalisableRange(0.1f, 10.f, 0.01f, 0.3f),
-      1.f));
+      1.f));  // Skewed range from precise control
   layout.add(std::make_unique<juce::AudioParameterFloat>("LFO1Amp", "LFO1 Amp",
                                                          0.f, 1.f, 0.5f));
 
+  // Harmonics
   layout.add(std::make_unique<juce::AudioParameterInt>(
       "harType", "Harmonics Preset", 1, 4, 1));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       "harGain", "Harmonics Gain", 0.f, 1.f, 0.5f));
 
+  // Encoder
   layout.add(std::make_unique<juce::AudioParameterBool>(
       "encodeEnabled", "Encode Enable", false));
   return layout;
